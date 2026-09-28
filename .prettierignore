@@ -1,0 +1,9 @@
+PRODUCT_SPEC.md
+IELTS_AGENT_RULES.md
+CODEX_BUILD_BRIEF.md
+DESIGN_SYSTEM.md
+pnpm-lock.yaml
+**/dist/
+**/.wrangler/
+**/coverage/
+

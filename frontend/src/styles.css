@@ -130,6 +130,14 @@ button {
   font-weight: 600;
 }
 
+.segmented-field:disabled .segmented-control {
+  opacity: 0.52;
+}
+
+.segmented-control button:disabled {
+  cursor: not-allowed;
+}
+
 .segmented-control button:focus-visible,
 .primary-button:focus-visible,
 textarea:focus-visible,
@@ -182,6 +190,18 @@ textarea:focus-visible,
   color: rgb(29 29 31 / 56%);
   font-size: 0.875rem;
   line-height: 1.45;
+}
+
+.status-label {
+  flex: none;
+  padding: 6px 9px;
+  border-radius: 999px;
+  color: #5b6f8f;
+  background: rgb(91 111 143 / 10%);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
 }
 
 .editor-field {
@@ -252,10 +272,30 @@ textarea:focus-visible,
   background: rgb(29 29 31 / 86%);
 }
 
+.primary-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.36;
+}
+
 .primary-button svg {
   width: 18px;
   height: 18px;
   fill: currentColor;
+}
+
+.spinner {
+  width: 15px;
+  height: 15px;
+  border: 2px solid rgb(255 255 255 / 42%);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 700ms linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .voice-panel {
@@ -277,6 +317,38 @@ textarea:focus-visible,
 
 .read-button {
   min-width: 170px;
+}
+
+.audio-result {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+  margin-top: 26px;
+  padding-top: 24px;
+  border-top: 1px solid rgb(29 29 31 / 8%);
+}
+
+.audio-result p {
+  margin: 0;
+}
+
+.audio-result__title {
+  color: #1d1d1f;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.audio-result__note {
+  margin-top: 5px !important;
+  color: rgb(29 29 31 / 52%);
+  font-size: 0.75rem;
+  line-height: 1.45;
+}
+
+.audio-result audio {
+  width: min(100%, 430px);
+  accent-color: #5b6f8f;
 }
 
 .site-footer {
@@ -345,6 +417,16 @@ textarea:focus-visible,
   .site-footer {
     flex-direction: column;
     gap: 22px;
+  }
+
+  .audio-result {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .audio-result audio {
+    width: 100%;
   }
 }
 
@@ -435,6 +517,7 @@ textarea:focus-visible,
   *,
   *::before,
   *::after {
+    animation-duration: 0.01ms !important;
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
   }
