@@ -3,7 +3,10 @@ const jsonHeaders = {
 };
 
 export default {
-  async fetch(request: Request): Promise<Response> {
+  async fetch(
+    request: Request,
+    environment: ProviderEnvironment,
+  ): Promise<Response> {
     const url = new URL(request.url);
 
     if (request.method === "GET" && url.pathname === "/health") {
@@ -13,9 +16,22 @@ export default {
       );
     }
 
+    if (request.method === "POST" && url.pathname === "/api/polish") {
+      const providerConfig = createProviderConfig(environment);
+      const textProvider = new KimiTextProvider(providerConfig.text);
+      const service = new ChineseIdeaStructuringService(textProvider);
+
+      return handlePolishRequest(request, service);
+    }
+
     return Response.json(
       { message: "Not found" },
       { status: 404, headers: jsonHeaders },
     );
   },
-} satisfies ExportedHandler;
+} satisfies ExportedHandler<ProviderEnvironment>;
+import { createProviderConfig } from "./config/provider-config";
+import type { ProviderEnvironment } from "./config/provider-config";
+import { KimiTextProvider } from "./providers/kimi-text-provider";
+import { handlePolishRequest } from "./routes/polish";
+import { ChineseIdeaStructuringService } from "./services/chinese-idea-structuring";

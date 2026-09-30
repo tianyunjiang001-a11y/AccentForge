@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { EditorCard } from "./components/EditorCard";
 import { SegmentedControl } from "./components/SegmentedControl";
 import { PRODUCT_LINKS } from "./config/productLinks";
-import { generateMockEnglish, polishMockIdea } from "./services/mockWorkflow";
+import { generateMockEnglish } from "./services/mockEnglish";
+import { POLISH_ERROR_MESSAGE, polishIdea } from "./services/polishIdea";
 import type { Accent, SpeakingPart, TargetBand, Voice } from "./types";
 import { createMockAudioUrl } from "./utils/mockAudio";
 
@@ -66,6 +67,8 @@ function App() {
   const [isPolishing, setIsPolishing] = useState(false);
   const [isGeneratingEnglish, setIsGeneratingEnglish] = useState(false);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
+  const [polishError, setPolishError] = useState<string | null>(null);
+  const polishInFlight = useRef(false);
 
   const isBusy = isPolishing || isGeneratingEnglish;
   const hasPolished = polishedFor !== null;
@@ -86,6 +89,10 @@ function App() {
   const canReadAloud = canChooseVoice && Boolean(accent && voice);
 
   const chineseDescription = useMemo(() => {
+    if (polishError) {
+      return polishError;
+    }
+
     if (isPolishedStale) {
       return "Speaking Part or Target Band changed. Polish this idea again.";
     }
@@ -95,7 +102,7 @@ function App() {
     }
 
     return "Start with your thoughts in Chinese. Fragments are fine.";
-  }, [hasPolished, isPolishedStale]);
+  }, [hasPolished, isPolishedStale, polishError]);
 
   const englishDescription = isEnglishStale
     ? "Your source changed. Generate English again before listening."
@@ -115,29 +122,34 @@ function App() {
 
   function handlePartChange(nextPart: SpeakingPart) {
     setPart(nextPart);
+    setPolishError(null);
     invalidateAudio();
   }
 
   function handleBandChange(nextBand: TargetBand) {
     setBand(nextBand);
+    setPolishError(null);
     invalidateAudio();
   }
 
   function handleChineseChange(value: string) {
     setChinese(Array.from(value).slice(0, 1000).join(""));
+    setPolishError(null);
     invalidateAudio();
   }
 
   async function handlePolish() {
-    if (!part || !band || !canPolish) {
+    if (!part || !band || !canPolish || polishInFlight.current) {
       return;
     }
 
+    polishInFlight.current = true;
     setIsPolishing(true);
+    setPolishError(null);
     invalidateAudio();
 
     try {
-      const structuredChinese = await polishMockIdea({
+      const structuredChinese = await polishIdea({
         rawChinese: chinese,
         part,
         targetBand: band,
@@ -145,7 +157,11 @@ function App() {
 
       setChinese(structuredChinese);
       setPolishedFor({ band, part });
+      setEnglishFor(null);
+    } catch {
+      setPolishError(POLISH_ERROR_MESSAGE);
     } finally {
+      polishInFlight.current = false;
       setIsPolishing(false);
     }
   }

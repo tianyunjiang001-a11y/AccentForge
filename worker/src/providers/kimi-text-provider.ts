@@ -7,18 +7,171 @@ import type {
 } from "./text-provider";
 
 export class KimiTextProvider implements TextGenerationProvider {
-  constructor(private readonly config: KimiProviderConfig) {}
+  constructor(
+    private readonly config: KimiProviderConfig,
+    private readonly fetcher: typeof fetch = fetch,
+  ) {}
 
-  generateText(request: TextGenerationRequest): Promise<TextGenerationResult> {
-    void this.config;
-    void request;
+  async generateText(
+    request: TextGenerationRequest,
+  ): Promise<TextGenerationResult> {
+    this.assertConfigured();
 
-    return Promise.reject(
-      new ProviderError({
-        code: "not-implemented",
+    const responseFormat = request.outputSchema
+      ? {
+          type: "json_schema",
+          json_schema: {
+            name: request.outputSchema.name,
+            strict: true,
+            schema: request.outputSchema.schema,
+          },
+        }
+      : { type: "text" };
+
+    let response: Response;
+
+    try {
+      response = await this.fetcher(this.chatCompletionsUrl(), {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${this.config.apiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: this.config.model,
+          messages: [
+            { role: "system", content: request.systemPrompt },
+            { role: "user", content: request.userPrompt },
+          ],
+          max_completion_tokens: request.maxOutputTokens,
+          response_format: responseFormat,
+          stream: false,
+          thinking: { type: "disabled" },
+        }),
+      });
+    } catch {
+      throw new ProviderError({
+        code: "upstream-failure",
         operation: "text-generation",
-        message: "Text generation is not available in the mock application.",
-      }),
-    );
+        message: "The text provider request failed.",
+        retryable: true,
+      });
+    }
+
+    let responseBody: string;
+
+    try {
+      responseBody = await response.text();
+    } catch {
+      throw new ProviderError({
+        code: "upstream-failure",
+        operation: "text-generation",
+        message: "The text provider response could not be read.",
+        retryable: true,
+      });
+    }
+
+    if (!response.ok) {
+      throw new ProviderError({
+        code: "upstream-failure",
+        operation: "text-generation",
+        message: "The text provider returned an error.",
+        retryable: response.status === 429 || response.status >= 500,
+      });
+    }
+
+    return this.parseResponse(responseBody);
   }
+
+  private assertConfigured() {
+    if (!this.config.apiKey || !this.config.baseUrl || !this.config.model) {
+      throw new ProviderError({
+        code: "not-configured",
+        operation: "text-generation",
+        message: "The text provider is not configured.",
+      });
+    }
+
+    let baseUrl: URL;
+
+    try {
+      baseUrl = new URL(this.config.baseUrl);
+    } catch {
+      throw new ProviderError({
+        code: "not-configured",
+        operation: "text-generation",
+        message: "The text provider configuration is invalid.",
+      });
+    }
+
+    if (baseUrl.protocol !== "https:") {
+      throw new ProviderError({
+        code: "not-configured",
+        operation: "text-generation",
+        message: "The text provider configuration is invalid.",
+      });
+    }
+  }
+
+  private chatCompletionsUrl() {
+    return `${this.config.baseUrl.replace(/\/+$/, "")}/chat/completions`;
+  }
+
+  private parseResponse(responseBody: string): TextGenerationResult {
+    let payload: unknown;
+
+    try {
+      payload = JSON.parse(responseBody);
+    } catch {
+      throw this.invalidResponseError();
+    }
+
+    if (!isKimiChatCompletion(payload)) {
+      throw this.invalidResponseError();
+    }
+
+    const choice = payload.choices[0];
+
+    if (choice.finish_reason !== "stop" || !choice.message.content.trim()) {
+      throw this.invalidResponseError();
+    }
+
+    return { text: choice.message.content };
+  }
+
+  private invalidResponseError() {
+    return new ProviderError({
+      code: "invalid-response",
+      operation: "text-generation",
+      message: "The text provider returned an invalid response.",
+    });
+  }
+}
+
+interface KimiChatCompletion {
+  choices: Array<{
+    finish_reason: string;
+    message: {
+      content: string;
+    };
+  }>;
+}
+
+function isKimiChatCompletion(value: unknown): value is KimiChatCompletion {
+  if (!isRecord(value) || !Array.isArray(value.choices)) {
+    return false;
+  }
+
+  const firstChoice: unknown = value.choices[0];
+
+  return (
+    isRecord(firstChoice) &&
+    typeof firstChoice.finish_reason === "string" &&
+    isRecord(firstChoice.message) &&
+    typeof firstChoice.message.content === "string"
+  );
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
 }
