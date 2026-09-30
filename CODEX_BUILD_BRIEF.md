@@ -1,10 +1,10 @@
 # AccentForge — Codex Build Brief
 
-**Version:** 1.0  
+**Version:** 1.1
 **Status:** Frozen Build Specification  
 **Project:** AccentForge  
 **Implementation Mode:** Sequential, test-first, mock-first  
-**Primary Platforms:** OpenAI + Cloudflare
+**Primary Platforms:** Kimi + MiniMax + Cloudflare
 
 ---
 
@@ -50,15 +50,15 @@ The required development sequence is:
 
 ↓
 
-**Chinese Idea Structuring**
+**Kimi Chinese Idea Structuring**
 
 ↓
 
-**IELTS English Generation**
+**Kimi IELTS English Generation**
 
 ↓
 
-**Voice Generation**
+**MiniMax Voice Generation**
 
 ↓
 
@@ -162,7 +162,8 @@ Use:
 
 Backend responsibilities:
 
-- OpenAI API requests;
+- Kimi text-generation requests;
+- MiniMax speech-generation requests;
 - input validation;
 - output validation;
 - API credential protection;
@@ -185,19 +186,52 @@ Use:
 
 ---
 
-## AI Provider
+## Text AI Provider
 
 Use:
 
-**OpenAI**
+**Kimi / Moonshot AI**
 
 for:
 
 1. Chinese idea structuring;
-2. IELTS English generation;
-3. text-to-speech.
+2. IELTS English generation.
 
-All OpenAI credentials must remain server-side.
+## Speech AI Provider
+
+Use:
+
+**MiniMax Audio**
+
+for:
+
+1. accent-aware text-to-speech.
+
+Kimi is the only approved V1 text provider.
+
+MiniMax is the only approved V1 speech provider.
+
+Do not add provider selection UI, fallback providers or client-side provider calls.
+
+All provider credentials must remain server-side.
+
+Required service boundaries:
+
+```text
+AccentForge Language Service
+→ TextGenerationProvider
+→ KimiTextProvider
+→ Kimi API
+
+AccentForge Speech Service
+→ SpeechSynthesisProvider
+→ MiniMaxSpeechProvider
+→ MiniMax Speech API
+```
+
+Routes and services must consume normalised AccentForge results, never raw vendor response objects. Pedagogical prompts and provider transport must remain separate.
+
+All AI traffic must pass through the Cloudflare Worker. Never add a browser-side provider request or log an API key. Avoid logging full student content unless strictly necessary for an approved operational purpose.
 
 ---
 
@@ -237,6 +271,7 @@ AccentForge/
 │   │   ├── index.ts
 │   │   ├── routes/
 │   │   ├── services/
+│   │   ├── providers/
 │   │   ├── prompts/
 │   │   ├── validation/
 │   │   └── config/
@@ -288,8 +323,29 @@ Provide only:
 Example:
 
 ```text
-OPENAI_API_KEY=
+KIMI_API_KEY=
+KIMI_BASE_URL=
+KIMI_TEXT_MODEL=kimi-k2.6
+
+MINIMAX_API_KEY=
+MINIMAX_BASE_URL=
+MINIMAX_TTS_MODEL=speech-2.8-turbo
+
+MINIMAX_BRITISH_FEMALE_VOICE_ID=
+MINIMAX_BRITISH_MALE_VOICE_ID=
+MINIMAX_AMERICAN_FEMALE_VOICE_ID=
+MINIMAX_AMERICAN_MALE_VOICE_ID=
+MINIMAX_AUSTRALIAN_FEMALE_VOICE_ID=
+MINIMAX_AUSTRALIAN_MALE_VOICE_ID=
+MINIMAX_CANADIAN_FEMALE_VOICE_ID=
+MINIMAX_CANADIAN_MALE_VOICE_ID=
 ```
+
+`KIMI_BASE_URL` and `MINIMAX_BASE_URL` may remain empty until their implementation phases verify the current official provider documentation.
+
+Model identifiers must be environment-driven from one configuration source rather than repeated throughout the codebase.
+
+Before the first runtime integration, verify base URLs, authentication, model identifiers, request formats and response formats against the current official Kimi and MiniMax API documentation.
 
 Production credentials must be stored as Cloudflare Worker secrets.
 
@@ -327,7 +383,7 @@ Create:
 
 Create the initial single-page shell.
 
-Do not connect OpenAI yet.
+Do not connect Kimi or MiniMax yet.
 
 Do not implement production AI logic yet.
 
@@ -563,7 +619,7 @@ Phase 2 passes when:
 - layout works responsively;
 - two-column desktop layout works;
 - mobile stacking works;
-- no OpenAI requests occur;
+- no Kimi or MiniMax requests occur;
 - no additional colour system has been introduced;
 - no unapproved UI component exists;
 - UI accurately reflects `PRODUCT_SPEC.md`.
@@ -582,7 +638,7 @@ feat: build AccentForge static interface
 
 ## Goal
 
-Simulate the entire user journey without using OpenAI.
+Simulate the entire user journey without using Kimi or MiniMax.
 
 This phase is mandatory.
 
@@ -715,11 +771,11 @@ feat: implement complete mock user workflow
 
 ---
 
-# 13. Phase 4 — Chinese Idea Structuring Integration
+# 13. Phase 4 — Kimi Chinese Idea Structuring Integration
 
 ## Goal
 
-Integrate the first real OpenAI capability.
+Integrate the first real Kimi capability through the AccentForge language service and text-provider boundary.
 
 Only:
 
@@ -728,6 +784,37 @@ Only:
 must become real.
 
 English and TTS remain mocked.
+
+Required workflow:
+
+```text
+Raw Chinese
++ Speaking Part
++ Target Band
+→ /api/polish
+→ Chinese Agent
+→ KimiTextProvider
+→ Kimi API
+→ normalised Structured Chinese
+→ frontend
+```
+
+The route must receive only the normalised AccentForge result. It must not parse a raw Kimi response.
+
+Kimi transport concerns must stay in `KimiTextProvider`:
+
+- authentication;
+- API endpoint;
+- model selection;
+- request transport;
+- response parsing;
+- provider error normalisation.
+
+IELTS prompt logic must stay outside the provider layer.
+
+Use `KIMI_TEXT_MODEL` as the single model configuration source. The intended initial baseline is `kimi-k2.6`; Kimi K3 is not the default. The environment-driven boundary must allow a later model comparison without restructuring application code.
+
+Before implementing a runtime request, verify the exact model identifier, base URL, authentication, request format, structured-output capabilities and response format against the current official Kimi Open Platform documentation.
 
 ---
 
@@ -861,11 +948,11 @@ Phase passes when:
 ## Suggested Commits
 
 ```text
-feat: add IELTS idea structuring prompts
+feat: add Kimi IELTS idea structuring prompts
 ```
 
 ```text
-feat: integrate Chinese idea structuring API
+feat: integrate Kimi Chinese idea structuring API
 ```
 
 ```text
@@ -874,11 +961,27 @@ test: add Chinese structuring evaluation cases
 
 ---
 
-# 19. Phase 5 — IELTS English Generation
+# 19. Phase 5 — Kimi IELTS English Generation
 
 ## Goal
 
-Replace the mock English response with a real OpenAI-generated response.
+Replace the mock English response with Kimi-generated spoken English through the same AccentForge language service and text-provider boundary.
+
+Required workflow:
+
+```text
+Latest Structured Chinese
++ Speaking Part
++ Target Band
+→ /api/generate
+→ English Agent
+→ KimiTextProvider
+→ Kimi API
+→ normalised spoken English
+→ frontend
+```
+
+Kimi-specific response formats must not leak to the frontend.
 
 ---
 
@@ -1007,7 +1110,7 @@ Higher Target Bands should show greater:
 ## Suggested Commits
 
 ```text
-feat: add IELTS English generation engine
+feat: add Kimi IELTS English generation engine
 ```
 
 ```text
@@ -1016,11 +1119,32 @@ test: evaluate target band differentiation
 
 ---
 
-# 23. Phase 6 — Voice Engine
+# 23. Phase 6 — MiniMax Accent-Aware Voice Engine
 
 ## Goal
 
-Integrate real text-to-speech.
+Integrate MiniMax Speech 2.8 through the AccentForge speech service and speech-provider boundary.
+
+Required workflow:
+
+```text
+Latest IELTS English
++ Accent
++ Voice
+→ /api/speech
+→ Speech Service
+→ Voice Map
+→ MiniMaxSpeechProvider
+→ MiniMax Speech 2.8
+→ audio
+→ frontend player
+```
+
+Use `MINIMAX_TTS_MODEL` as the single model configuration source. The intended initial V1 model is `speech-2.8-turbo`. The provider boundary must allow a later switch to `speech-2.8-hd` without restructuring the speech service.
+
+Before implementing a runtime request, verify the base URL, authentication, Speech 2.8 endpoint, exact request format, `voice_id` behaviour and audio response format against the current official MiniMax API documentation.
+
+MiniMax-specific response formats and errors must not leak to the route or frontend.
 
 ---
 
@@ -1120,6 +1244,10 @@ Use two clearly different synthetic voice presentations:
 
 Do not imply the system is cloning or reproducing any real person.
 
+The eight Accent × Voice combinations are fixed logical product profiles. Map them centrally to environment-configured MiniMax voice IDs. Do not expose voice IDs in the frontend, duplicate them through the source tree or invent their values. The product owner must approve the real voice IDs before Phase 6 implementation.
+
+Keep the same logical voice profile stable across sessions wherever possible. Do not add user-facing voice cloning or voice-design controls.
+
 ---
 
 # 27. Voice Efficiency Rules
@@ -1174,7 +1302,7 @@ Evaluate:
 ## Suggested Commits
 
 ```text
-feat: add accent-aware speech generation
+feat: add MiniMax accent-aware speech generation
 ```
 
 ```text
@@ -1247,17 +1375,22 @@ Do not create login accounts solely for rate limiting.
 
 # 34. Spending Protection
 
-The OpenAI project used by AccentForge must have a strict spending ceiling.
+The product owner pays for Kimi text generation and MiniMax speech generation while the public V1 remains free to users.
 
-Start low.
+Configure provider usage and budget monitoring for both services. Start with conservative limits and increase them only when observed demand justifies it.
 
-Recommended initial monthly maximum:
+Treat TTS as the likely higher variable-cost component.
 
-```text
-$5–$10
-```
+Preserve these request-level controls:
 
-Increase only if required.
+- maximum 1000-character Chinese input;
+- no generation while typing;
+- explicit Polish My Idea action;
+- explicit Generate English action;
+- explicit Read Aloud action;
+- exactly one selected voice generated per TTS request;
+- server-side credentials;
+- rate limiting and bot protection before public launch.
 
 The software must fail gracefully if the provider limit is reached.
 
@@ -1287,12 +1420,16 @@ Today's public usage limit has been reached. Please try again later.
 
 Never show:
 
-- OpenAI error objects;
-- stack traces;
-- internal URLs;
-- secret values;
+- Kimi or MiniMax error objects;
+- provider status codes;
+- model names;
+- base URLs or internal URLs;
+- credentials or secret values;
+- raw stack traces;
 - HTTP implementation details;
 - backend debugging data.
+
+Provider errors must be normalised inside the provider layer before they reach services or routes.
 
 Error presentation must also comply with `DESIGN_SYSTEM.md`.
 
@@ -1338,17 +1475,20 @@ to:
 
 ---
 
-## Production Secret
+## Production Secrets and Configuration
 
 Store:
 
 ```text
-OPENAI_API_KEY
+KIMI_API_KEY
+MINIMAX_API_KEY
 ```
 
 using Cloudflare secrets.
 
-Never commit it.
+Never commit them or log their values.
+
+Configure the Kimi and MiniMax base URLs, model identifiers and eight MiniMax voice IDs in the Worker environment. Do not expose any provider configuration to browser code. Verify official base URLs during the relevant implementation phase instead of guessing them during scaffolding.
 
 ---
 
@@ -1364,15 +1504,9 @@ Cloudflare Pages
      │
      ▼
 Cloudflare Worker
-     │
-     ├── /api/polish
-     │
-     ├── /api/generate
-     │
-     └── /api/speech
-     │
-     ▼
-OpenAI
+     ├── /api/polish ──── AccentForge Language Service ──── Kimi
+     ├── /api/generate ── AccentForge Language Service ──── Kimi
+     └── /api/speech ──── AccentForge Speech Service ───── MiniMax
 ```
 
 ---
@@ -1657,8 +1791,10 @@ Show:
 React/Vite
 → Cloudflare Pages
 → Cloudflare Workers
-→ OpenAI
+→ Kimi + MiniMax
 ```
+
+Explain that Kimi performs Chinese idea structuring and IELTS spoken-English generation, while MiniMax performs speech synthesis. Do not imply that either provider is affiliated with IELTS.
 
 ---
 
@@ -1725,8 +1861,14 @@ Explain:
 
 - frontend;
 - backend;
-- AI flow;
+- Kimi text-generation flow;
+- MiniMax speech-synthesis flow;
+- `TextGenerationProvider` and `KimiTextProvider` boundaries;
+- `SpeechSynthesisProvider` and `MiniMaxSpeechProvider` boundaries;
+- normalised results and provider-neutral errors;
+- centralised environment and voice-profile configuration;
 - prompt layers;
+- separation between pedagogical prompts and provider transport;
 - security boundaries;
 - API flow.
 
@@ -1744,9 +1886,10 @@ docs/evaluation.md
 
 Describe:
 
-- Part testing;
-- Band testing;
-- voice testing;
+- Kimi Part testing;
+- Kimi Band testing;
+- MiniMax testing of all eight fixed voice profiles;
+- provider reliability and normalised error behaviour;
 - known failure modes;
 - prompt iteration;
 - visual QA where relevant.
@@ -1822,17 +1965,19 @@ feat: build AccentForge static interface
 
 feat: implement complete mock workflow
 
-feat: add IELTS idea structuring prompts
+chore: migrate provider architecture to Kimi and MiniMax
 
-feat: integrate Chinese idea structuring API
+feat: add Kimi IELTS idea structuring prompts
+
+feat: integrate Kimi Chinese idea structuring API
 
 test: add Chinese structuring evaluation cases
 
-feat: add IELTS English generation engine
+feat: add Kimi IELTS English generation engine
 
 test: evaluate target band differentiation
 
-feat: add accent-aware speech generation
+feat: add MiniMax accent-aware speech generation
 
 test: verify eight voice combinations
 
@@ -1905,10 +2050,10 @@ AccentForge V1.0.0 may be released only when all of the following are true.
 
 - frontend is deployed;
 - Worker is deployed;
-- API secret is protected;
+- Kimi and MiniMax API secrets are protected;
 - rate limiting exists;
 - bot protection exists;
-- spending protection exists;
+- provider usage and budget monitoring exists;
 - errors are handled.
 
 ---
@@ -1996,8 +2141,8 @@ AccentForge is intended to remain publicly available during the relevant student
 
 When the public service is no longer required:
 
-1. disable paid AI endpoints;
-2. remove or rotate active production API credentials;
+1. disable the paid Kimi and MiniMax endpoints;
+2. remove or rotate both active production API credentials;
 3. preserve the GitHub repository;
 4. preserve screenshots;
 5. preserve demo GIF/video;
@@ -2030,7 +2175,9 @@ Use incremental implementation.
 
 Use mock data before AI integration.
 
-Integrate AI services one stage at a time.
+Integrate the frozen Kimi + MiniMax + Cloudflare stack one stage at a time.
+
+Kimi is the only V1 text-generation provider. MiniMax is the only V1 speech-generation provider. Do not add fallback providers or a provider-selection UI.
 
 Test each stage before moving forward.
 

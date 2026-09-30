@@ -1,9 +1,9 @@
 # AccentForge — Product Specification
 
-**Version:** 1.0  
+**Version:** 1.1
 **Status:** Frozen Product Specification  
 **Product Type:** Public AI-powered IELTS Speaking learning tool  
-**Core Platforms:** OpenAI + Cloudflare
+**Core Platforms:** Kimi + MiniMax + Cloudflare
 
 ---
 
@@ -535,7 +535,7 @@ Required rules:
 - only one accent/voice combination generated per request;
 - server-side rate limiting;
 - bot protection;
-- project-level API spending ceiling;
+- provider-level usage and budget monitoring for Kimi and MiniMax;
 - API credentials stored only on the backend.
 
 The public product should remain free to users during its active application-cycle deployment.
@@ -562,18 +562,47 @@ Responsibilities:
 - validate inputs;
 - enforce limits;
 - protect API credentials;
-- communicate with OpenAI;
+- communicate with the configured text and speech providers;
 - return structured responses/audio.
 
-### AI
+### Text AI Provider
 
-**OpenAI**
+**Kimi / Moonshot AI**
 
 Used for:
 
 1. Chinese idea structuring;
-2. IELTS spoken-English generation;
-3. text-to-speech.
+2. IELTS spoken-English generation.
+
+### Speech Provider
+
+**MiniMax Audio**
+
+Used for:
+
+1. accent-aware text-to-speech.
+
+### Provider Service Boundaries
+
+Text pipeline:
+
+```text
+AccentForge Language Service
+→ TextGenerationProvider
+→ KimiTextProvider
+→ Kimi API
+```
+
+Speech pipeline:
+
+```text
+AccentForge Speech Service
+→ SpeechSynthesisProvider
+→ MiniMaxSpeechProvider
+→ MiniMax Speech API
+```
+
+Provider-specific response formats must remain inside their provider layers. All provider credentials must remain server-side in the Cloudflare Worker environment.
 
 ### Database
 
