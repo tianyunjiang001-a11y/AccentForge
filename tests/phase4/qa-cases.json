@@ -1,0 +1,107 @@
+[
+  {
+    "id": "p1-short-coffee",
+    "part": 1,
+    "targetBand": 5,
+    "category": "very short",
+    "rawChinese": "我喜欢咖啡。"
+  },
+  {
+    "id": "p1-fragmented-city",
+    "part": 1,
+    "targetBand": 6,
+    "category": "fragmented",
+    "rawChinese": "住大城市，方便，工作多，人太多，有点吵。"
+  },
+  {
+    "id": "p1-repetitive-exercise",
+    "part": 1,
+    "targetBand": 7,
+    "category": "repetitive",
+    "rawChinese": "我会运动，因为运动让我放松，我喜欢运动，运动以后心情好。"
+  },
+  {
+    "id": "p1-colloquial-weekend",
+    "part": 1,
+    "targetBand": 8,
+    "category": "colloquial",
+    "rawChinese": "周末嘛就宅着呗，有时候刷刷剧，累了一周真的不想折腾。"
+  },
+  {
+    "id": "p1-ambiguous-reading",
+    "part": 1,
+    "targetBand": 9,
+    "category": "ambiguous",
+    "rawChinese": "还行吧，以前不太喜欢，现在偶尔会看，主要看状态。"
+  },
+  {
+    "id": "p2-personal-teacher",
+    "part": 2,
+    "targetBand": 5,
+    "category": "personal experience",
+    "rawChinese": "想说一个帮助过我的老师。上课很耐心，我不敢提问的时候会鼓励我，所以后来更有信心。"
+  },
+  {
+    "id": "p2-poorly-organised-trip",
+    "part": 2,
+    "targetBand": 6,
+    "category": "poorly organised",
+    "rawChinese": "去年和朋友去海边，天气热，人不少，第一次看日出，很早起床，但是值得，回来很累。"
+  },
+  {
+    "id": "p2-fragmented-object",
+    "part": 2,
+    "targetBand": 7,
+    "category": "fragmented",
+    "rawChinese": "旧相机，家里找到的，不贵，拍出来颜色特别，带出去麻烦，但我喜欢。"
+  },
+  {
+    "id": "p2-repetitive-event",
+    "part": 2,
+    "targetBand": 8,
+    "category": "repetitive",
+    "rawChinese": "一次比赛让我很紧张，真的很紧张，准备很久，最后完成了，不是第一名但还是开心。"
+  },
+  {
+    "id": "p2-incomplete-hobby",
+    "part": 2,
+    "targetBand": 9,
+    "category": "incomplete reasoning",
+    "rawChinese": "最近开始做饭，因为外卖吃腻了。第一次很失败，后来好一点，现在觉得有意思，也可能更健康。"
+  },
+  {
+    "id": "p3-short-remote-work",
+    "part": 3,
+    "targetBand": 5,
+    "category": "very short abstract",
+    "rawChinese": "远程工作方便，但是沟通难。"
+  },
+  {
+    "id": "p3-fragmented-technology",
+    "part": 3,
+    "targetBand": 6,
+    "category": "fragmented abstract reasoning",
+    "rawChinese": "科技，生活方便，老人不会用，差距，也不能不用。"
+  },
+  {
+    "id": "p3-repetitive-public-transport",
+    "part": 3,
+    "targetBand": 7,
+    "category": "repetitive reasoning",
+    "rawChinese": "政府应该发展公共交通，因为交通重要，公共交通能减少堵车，所以应该多发展公共交通。"
+  },
+  {
+    "id": "p3-colloquial-education",
+    "part": 3,
+    "targetBand": 8,
+    "category": "colloquial abstract reasoning",
+    "rawChinese": "学校光教考试那套肯定不够啊，学生以后还得工作、跟人合作，但基础知识也不能丢。"
+  },
+  {
+    "id": "p3-ambiguous-city-policy",
+    "part": 3,
+    "targetBand": 9,
+    "category": "ambiguous and qualified reasoning",
+    "rawChinese": "限制私家车可能有用，但也不一定公平。市中心可以，住得远的人怎么办，还要看公共交通够不够。"
+  }
+]

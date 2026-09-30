@@ -10,7 +10,9 @@
     "build": "pnpm -r build",
     "typecheck": "pnpm -r typecheck",
     "lint": "eslint frontend/src worker/src",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "test": "pnpm -r test",
+    "qa:phase4": "node tests/phase4/run-evaluation.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",
