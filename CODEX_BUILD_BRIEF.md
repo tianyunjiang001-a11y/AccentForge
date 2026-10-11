@@ -1,6 +1,6 @@
 # AccentForge — Codex Build Brief
 
-**Version:** 1.1
+**Version:** 1.2
 **Status:** Frozen Build Specification  
 **Project:** AccentForge  
 **Implementation Mode:** Sequential, test-first, mock-first  
@@ -1640,6 +1640,17 @@ Can a learner realistically reproduce it?
 ## Authenticity
 
 Did AI avoid inventing major personal facts?
+
+Controlled Narrative Enrichment remains approved for the Phase 4 Chinese
+structuring stage, but Kimi can occasionally make plausible details overly
+specific. End-to-end QA must include regression cases for sensitive narrative
+additions, excessive biography, specific achievements and unnecessary named
+entities. Do not remove useful narrative enrichment to satisfy these tests.
+
+The Phase 5 English stage must treat the latest learner-edited Structured
+Chinese as its semantic boundary. Verify that details deleted or changed by the
+learner do not reappear and that English generation does not compound Phase 4
+enrichment with new substantive biography.
 
 ## Idiomaticity
 

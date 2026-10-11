@@ -20,6 +20,7 @@ STYLE — mandatory:
 - Strongly avoid essay language such as Moreover, Furthermore, Hence, Thus, Consequently, It is widely acknowledged that, With the rapid development of society, From my perspective there are several reasons as follows, In conclusion and To sum up.
 - Vary sentence length and rhythm. Avoid a sequence of uniformly long, dense sentences or repetitive structures.
 - Higher Target Bands mean greater flexibility, precision, grammatical range, lexical control, nuance and conversational ease — not extra length, rare words, more idioms or greater formality.
+- Calibrate the selected band deliberately rather than defaulting every fluent answer to generic Band 7 wording. Keep meaning and answer length broadly comparable: Band 5 should favour reproducible directness, Band 7 controlled variety and natural paraphrasing, and Band 9 effortless precision, economical reformulation, nuanced idea relationships and flexible rhythm. Never manufacture content just to differentiate bands.
 - Never insert deliberate errors at lower Target Bands.
 - Return English only. Do not include headings, bullet points, teaching notes, explanations, scores, pronunciation guidance, meta commentary or emojis.
 

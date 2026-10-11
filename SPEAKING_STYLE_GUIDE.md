@@ -308,6 +308,14 @@ It does not mean:
 
 Never intentionally introduce errors at a lower Target Band.
 
+Calibration evidence showed that fluent baseline wording can otherwise flatten
+Band 7 and Band 9 into the same answer. The selected band must therefore be
+expressed deliberately, while keeping the same meaning and broadly comparable
+answer length. Band 5 should favour reproducible directness; Band 7 should show
+controlled variety and natural paraphrasing; Band 9 should show effortless
+precision, economical reformulation, nuanced idea relationships and flexible
+rhythm. Do not manufacture content merely to make the levels look different.
+
 ---
 
 # 14. Band 5

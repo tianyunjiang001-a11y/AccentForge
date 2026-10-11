@@ -1,0 +1,117 @@
+{
+  "evaluatedAt": "2026-10-11T16:11:21.000Z",
+  "apiBaseUrl": "http://127.0.0.1:8787",
+  "caseDelayMs": 21000,
+  "successfulCases": 9,
+  "totalCases": 9,
+  "results": [
+    {
+      "id": "p1-coffee-band5",
+      "part": 1,
+      "targetBand": 5,
+      "source": "manually edited",
+      "semanticGroup": "p1-coffee",
+      "structuredChinese": "我挺喜欢喝咖啡的，主要是因为早上经常比较困，喝一杯会让我清醒一点。现在这已经成了我的日常习惯，不过我通常一天只喝一杯。",
+      "status": 200,
+      "durationMs": 2021,
+      "spokenEnglish": "I quite like coffee, mainly because I often feel pretty tired in the morning, and a cup helps me wake up a bit. It's become a daily habit now, though I usually stick to just one cup a day.",
+      "error": null
+    },
+    {
+      "id": "p1-coffee-band7",
+      "part": 1,
+      "targetBand": 7,
+      "source": "manually edited",
+      "semanticGroup": "p1-coffee",
+      "structuredChinese": "我挺喜欢喝咖啡的，主要是因为早上经常比较困，喝一杯会让我清醒一点。现在这已经成了我的日常习惯，不过我通常一天只喝一杯。",
+      "status": 200,
+      "durationMs": 2059,
+      "spokenEnglish": "Yeah, I do enjoy coffee, mostly because I tend to feel pretty groggy in the mornings, and a cup really helps me wake up a bit. It's become part of my daily routine now, though I usually stick to just one cup a day.",
+      "error": null
+    },
+    {
+      "id": "p1-coffee-band9",
+      "part": 1,
+      "targetBand": 9,
+      "source": "manually edited",
+      "semanticGroup": "p1-coffee",
+      "structuredChinese": "我挺喜欢喝咖啡的，主要是因为早上经常比较困，喝一杯会让我清醒一点。现在这已经成了我的日常习惯，不过我通常一天只喝一杯。",
+      "status": 200,
+      "durationMs": 1898,
+      "spokenEnglish": "I'm quite into coffee, mostly because I tend to feel pretty groggy in the mornings, and a cup helps me wake up a bit. It's become part of my daily routine now, though I usually stick to just one a day.",
+      "error": null
+    },
+    {
+      "id": "p2-camera-band5",
+      "part": 2,
+      "targetBand": 5,
+      "source": "manually edited Phase 4 output",
+      "semanticGroup": "p2-old-camera",
+      "structuredChinese": "我想说家里找到的一台旧相机。它不贵，外表也很普通，但拍出来的颜色偏暖，跟手机照片很不一样。带它出门有点麻烦，拍完也不能马上看到效果，不过我还是很喜欢。它会让我拍照时慢下来，更认真地观察眼前的东西，所以对我来说挺特别的。",
+      "status": 200,
+      "durationMs": 3481,
+      "spokenEnglish": "I'd like to talk about an old camera I found at home. It wasn't expensive and it looks pretty ordinary on the outside, but the colours in the photos come out warm, which is quite different from phone pictures. Taking it out is a bit of a hassle, and you can't check the results straight away, but I still really like it. It makes me slow down when I'm taking photos and pay more attention to what's actually in front of me, so it's special to me in that way.",
+      "error": null
+    },
+    {
+      "id": "p2-camera-band7",
+      "part": 2,
+      "targetBand": 7,
+      "source": "manually edited Phase 4 output",
+      "semanticGroup": "p2-old-camera",
+      "structuredChinese": "我想说家里找到的一台旧相机。它不贵，外表也很普通，但拍出来的颜色偏暖，跟手机照片很不一样。带它出门有点麻烦，拍完也不能马上看到效果，不过我还是很喜欢。它会让我拍照时慢下来，更认真地观察眼前的东西，所以对我来说挺特别的。",
+      "status": 200,
+      "durationMs": 3432,
+      "spokenEnglish": "I'd like to talk about an old camera I found at home. It wasn't expensive, and it looks pretty ordinary, but the colours come out warm — nothing like what you get from a phone. It's a bit of a hassle carrying it around, and you can't check your shots straight away, but I still love using it. What I like most is that it forces me to slow down and really pay attention to what's in front of me, which makes it quite special to me.",
+      "error": null
+    },
+    {
+      "id": "p2-camera-band9",
+      "part": 2,
+      "targetBand": 9,
+      "source": "manually edited Phase 4 output",
+      "semanticGroup": "p2-old-camera",
+      "structuredChinese": "我想说家里找到的一台旧相机。它不贵，外表也很普通，但拍出来的颜色偏暖，跟手机照片很不一样。带它出门有点麻烦，拍完也不能马上看到效果，不过我还是很喜欢。它会让我拍照时慢下来，更认真地观察眼前的东西，所以对我来说挺特别的。",
+      "status": 200,
+      "durationMs": 2915,
+      "spokenEnglish": "I want to talk about an old camera I found at home. It wasn't expensive, and it looks pretty ordinary, but the colours come out warm — nothing like what you get on a phone. It's a bit of a hassle to carry around, and you can't check your shots straight away, but I still love using it. What I like most is that it forces me to slow down and actually look at what's in front of me before I press the shutter. That makes it special to me.",
+      "error": null
+    },
+    {
+      "id": "p3-transit-band5",
+      "part": 3,
+      "targetBand": 5,
+      "source": "manually edited Phase 4 output",
+      "semanticGroup": "p3-public-transport",
+      "structuredChinese": "我觉得政府应该发展公共交通，因为城市堵车很严重。如果公交和地铁更方便，更多人会愿意少开车，这能减少拥堵和空气污染。不过不同城市情况不同，政府还是要根据当地需求选择合适的方式。",
+      "status": 200,
+      "durationMs": 2102,
+      "spokenEnglish": "I think the government should develop public transport, because traffic jams in cities are really serious. If buses and subways were more convenient, more people would be willing to drive less, and that could reduce congestion and air pollution. But different cities have different situations, so the government still needs to choose suitable ways based on local needs.",
+      "error": null
+    },
+    {
+      "id": "p3-transit-band7",
+      "part": 3,
+      "targetBand": 7,
+      "source": "manually edited Phase 4 output",
+      "semanticGroup": "p3-public-transport",
+      "structuredChinese": "我觉得政府应该发展公共交通，因为城市堵车很严重。如果公交和地铁更方便，更多人会愿意少开车，这能减少拥堵和空气污染。不过不同城市情况不同，政府还是要根据当地需求选择合适的方式。",
+      "status": 200,
+      "durationMs": 4108,
+      "spokenEnglish": "I'd say investing in public transport is one of the most effective things governments can do, simply because traffic congestion has become such a nightmare in so many cities. If buses and subways were genuinely convenient and reliable, I think a lot more people would actually choose to leave their cars at home. That shift would ease congestion and cut air pollution at the same time. Having said that, there's no one-size-fits-all solution here. What works in one city might not suit another, so governments still need to look closely at local conditions and figure out the best approach for each place.",
+      "error": null
+    },
+    {
+      "id": "p3-transit-band9",
+      "part": 3,
+      "targetBand": 9,
+      "source": "manually edited Phase 4 output",
+      "semanticGroup": "p3-public-transport",
+      "structuredChinese": "我觉得政府应该发展公共交通，因为城市堵车很严重。如果公交和地铁更方便，更多人会愿意少开车，这能减少拥堵和空气污染。不过不同城市情况不同，政府还是要根据当地需求选择合适的方式。",
+      "status": 200,
+      "durationMs": 3816,
+      "spokenEnglish": "I'd say investing in public transport is the way to go, simply because traffic congestion has become such a nightmare in so many cities. If buses and subways were genuinely convenient — frequent, reliable, well-connected — I think a lot of people would actually choose to leave their cars at home. That shift would ease congestion and cut air pollution at the same time. But then again, there's no one-size-fits-all solution. What works in a megacity might be completely impractical somewhere smaller, so local governments really need to tailor their approach to what that particular place actually needs.",
+      "error": null
+    }
+  ]
+}
