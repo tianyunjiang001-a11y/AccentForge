@@ -53,7 +53,7 @@ describe("POST /api/speech", () => {
     expect(synthesize).not.toHaveBeenCalled();
   });
 
-  it("returns a controlled message for an unsupported Phase 6A voice", async () => {
+  it("returns a controlled message for an unsupported voice", async () => {
     const response = await handleSpeechRequest(
       createRequest(
         JSON.stringify({
@@ -72,7 +72,7 @@ describe("POST /api/speech", () => {
     expect(response.status).toBe(422);
     await expect(response.json()).resolves.toEqual({
       message:
-        "This voice combination is not available in Phase 6A. Choose Australian · Male.",
+        "This voice combination is not available yet. Please choose another accent and voice.",
     });
   });
 

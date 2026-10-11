@@ -1,0 +1,58 @@
+[
+  {
+    "accent": "british",
+    "voice": "female",
+    "voiceId": "English_Graceful_Lady",
+    "status": "candidate",
+    "officialEvidence": "MiniMax voice-list API describes this system voice as having a classic British accent."
+  },
+  {
+    "accent": "british",
+    "voice": "male",
+    "voiceId": null,
+    "status": "unresolved",
+    "officialEvidence": "No British male system voice is identified by the current official system list or account voice-list response."
+  },
+  {
+    "accent": "american",
+    "voice": "female",
+    "voiceId": "English_Whispering_girl",
+    "status": "candidate",
+    "officialEvidence": "MiniMax voice-list API describes this system voice as a young female whispering voice with a General American accent. IELTS suitability requires human listening."
+  },
+  {
+    "accent": "american",
+    "voice": "male",
+    "voiceId": "English_Trustworthy_Man",
+    "status": "candidate",
+    "officialEvidence": "MiniMax voice-list API describes this system voice as a young male voice with a General American accent."
+  },
+  {
+    "accent": "australian",
+    "voice": "female",
+    "voiceId": null,
+    "status": "unresolved",
+    "officialEvidence": "No Australian female system voice is identified by the current official system list or account voice-list response."
+  },
+  {
+    "accent": "australian",
+    "voice": "male",
+    "voiceId": "English_Aussie_Bloke",
+    "status": "approved",
+    "officialEvidence": "MiniMax voice-list API describes this system voice as a young male voice with a distinct Australian accent; Phase 6A human listening approved it."
+  },
+  {
+    "accent": "canadian",
+    "voice": "female",
+    "voiceId": null,
+    "status": "unresolved",
+    "officialEvidence": "No Canadian female system voice is identified by the current official system list or account voice-list response."
+  },
+  {
+    "accent": "canadian",
+    "voice": "male",
+    "voiceId": null,
+    "status": "unresolved",
+    "officialEvidence": "No Canadian male system voice is identified by the current official system list or account voice-list response."
+  }
+]

@@ -66,8 +66,8 @@ async function buildEnglishAnswer() {
   return user;
 }
 
-describe("AccentForge Phase 6A workflow", () => {
-  it("uses real endpoint contracts for polish, English and Australian male audio", async () => {
+describe("AccentForge Phase 6B workflow", () => {
+  it("uses real endpoint contracts for polish, English and a configured voice", async () => {
     const user = await buildEnglishAnswer();
 
     expect(apiFetch).toHaveBeenCalledTimes(2);
@@ -94,8 +94,8 @@ describe("AccentForge Phase 6A workflow", () => {
       }),
     );
 
-    await user.click(screen.getByRole("button", { name: "Australian" }));
-    await user.click(screen.getByRole("button", { name: "Male" }));
+    await user.click(screen.getByRole("button", { name: "British" }));
+    await user.click(screen.getByRole("button", { name: "Female" }));
 
     expect(document.querySelector("audio")).not.toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Read Aloud" }));
@@ -103,32 +103,51 @@ describe("AccentForge Phase 6A workflow", () => {
     await waitFor(() => {
       expect(document.querySelector("audio")).toBeInTheDocument();
     });
-    expect(screen.getByText("Australian · Male")).toBeInTheDocument();
+    expect(screen.getByText("British · Female")).toBeInTheDocument();
     expect(apiFetch).toHaveBeenLastCalledWith(
       "/api/speech",
       expect.objectContaining({
         method: "POST",
         body: JSON.stringify({
           text: KIMI_SPOKEN_ENGLISH,
-          accent: "australian",
-          voice: "male",
+          accent: "british",
+          voice: "female",
         }),
       }),
     );
     expect(URL.createObjectURL).toHaveBeenCalledTimes(1);
   });
 
-  it("does not call speech for the seven unsupported Phase 6A combinations", async () => {
+  it("shows a controlled message when the Worker rejects an unsupported combination", async () => {
     const user = await buildEnglishAnswer();
+    apiFetch.mockResolvedValueOnce(
+      Response.json(
+        {
+          message:
+            "This voice combination is not available yet. Please choose another accent and voice.",
+        },
+        { status: 422 },
+      ),
+    );
 
-    await user.click(screen.getByRole("button", { name: "British" }));
+    await user.click(screen.getByRole("button", { name: "Canadian" }));
     await user.click(screen.getByRole("button", { name: "Female" }));
     await user.click(screen.getByRole("button", { name: "Read Aloud" }));
 
-    expect(apiFetch).toHaveBeenCalledTimes(2);
+    expect(apiFetch).toHaveBeenCalledTimes(3);
+    expect(apiFetch).toHaveBeenLastCalledWith(
+      "/api/speech",
+      expect.objectContaining({
+        body: JSON.stringify({
+          text: KIMI_SPOKEN_ENGLISH,
+          accent: "canadian",
+          voice: "female",
+        }),
+      }),
+    );
     expect(
       screen.getByText(
-        "This voice is not available in the current test build. Choose Australian · Male.",
+        "This voice combination is not available yet. Please choose another accent and voice.",
       ),
     ).toBeInTheDocument();
     expect(document.querySelector("audio")).not.toBeInTheDocument();

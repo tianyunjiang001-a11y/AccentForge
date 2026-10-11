@@ -8,14 +8,17 @@ import {
 } from "./speech-synthesis";
 
 const voiceProfiles: VoiceProfileMap = {
-  british: { female: "", male: "" },
-  american: { female: "", male: "" },
+  british: { female: "English_Graceful_Lady", male: "" },
+  american: {
+    female: "English_Whispering_girl",
+    male: "English_Trustworthy_Man",
+  },
   australian: { female: "", male: "English_Aussie_Bloke" },
   canadian: { female: "", male: "" },
 };
 
 describe("SpeechSynthesisService", () => {
-  it("passes the configured Phase 6A selection to the provider", async () => {
+  it("passes a configured Phase 6B selection to the provider", async () => {
     const synthesizeSpeech = vi.fn().mockResolvedValue({
       audio: new ArrayBuffer(4),
       contentType: "audio/mpeg",
@@ -24,8 +27,8 @@ describe("SpeechSynthesisService", () => {
     const service = new SpeechSynthesisService(provider, voiceProfiles);
     const request = {
       text: "Natural English.",
-      accent: "australian" as const,
-      voice: "male" as const,
+      accent: "british" as const,
+      voice: "female" as const,
     };
 
     await expect(service.synthesize(request)).resolves.toEqual(
@@ -44,7 +47,7 @@ describe("SpeechSynthesisService", () => {
     expect(() =>
       service.synthesize({
         text: "Natural English.",
-        accent: "british",
+        accent: "canadian",
         voice: "female",
       }),
     ).toThrow(UnsupportedVoiceSelectionError);

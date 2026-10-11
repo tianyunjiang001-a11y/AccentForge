@@ -2,8 +2,8 @@ import type { Accent, Voice } from "../types";
 
 export const AUDIO_ERROR_MESSAGE =
   "Audio could not be generated. Please try again.";
-export const PHASE_6A_UNSUPPORTED_VOICE_MESSAGE =
-  "This voice is not available in the current test build. Choose Australian · Male.";
+export const UNSUPPORTED_VOICE_MESSAGE =
+  "This voice combination is not available yet. Please choose another accent and voice.";
 
 interface SynthesizeSpeechInput {
   text: string;
@@ -15,10 +15,6 @@ export interface SynthesizedAudio {
   audioUrl: string;
   durationMs: number | null;
   usageCharacters: number | null;
-}
-
-export function isPhase6ATestVoice(accent: Accent, voice: Voice) {
-  return accent === "Australian" && voice === "Male";
 }
 
 export async function synthesizeSpeech(
@@ -38,6 +34,10 @@ export async function synthesizeSpeech(
     });
   } catch {
     throw new Error(AUDIO_ERROR_MESSAGE);
+  }
+
+  if (response.status === 422) {
+    throw new Error(UNSUPPORTED_VOICE_MESSAGE);
   }
 
   if (!response.ok) {

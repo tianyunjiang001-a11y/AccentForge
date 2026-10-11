@@ -5,8 +5,8 @@ import type {
   SpeechSynthesisResult,
 } from "../providers/speech-provider";
 
-export const PHASE_6A_UNSUPPORTED_VOICE_MESSAGE =
-  "This voice combination is not available in Phase 6A. Choose Australian · Male.";
+export const UNSUPPORTED_VOICE_MESSAGE =
+  "This voice combination is not available yet. Please choose another accent and voice.";
 
 export interface SpeechSynthesizer {
   synthesize(request: SpeechSynthesisRequest): Promise<SpeechSynthesisResult>;
@@ -28,7 +28,7 @@ export class SpeechSynthesisService implements SpeechSynthesizer {
 }
 
 export class UnsupportedVoiceSelectionError extends Error {
-  readonly publicMessage = PHASE_6A_UNSUPPORTED_VOICE_MESSAGE;
+  readonly publicMessage = UNSUPPORTED_VOICE_MESSAGE;
 
   constructor() {
     super("The selected voice profile is not configured.");

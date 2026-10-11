@@ -10,9 +10,8 @@ import {
 import { POLISH_ERROR_MESSAGE, polishIdea } from "./services/polishIdea";
 import {
   AUDIO_ERROR_MESSAGE,
-  isPhase6ATestVoice,
-  PHASE_6A_UNSUPPORTED_VOICE_MESSAGE,
   synthesizeSpeech,
+  UNSUPPORTED_VOICE_MESSAGE,
 } from "./services/synthesizeSpeech";
 import type { Accent, SpeakingPart, TargetBand, Voice } from "./types";
 
@@ -236,11 +235,6 @@ function App() {
 
     invalidateAudio();
 
-    if (!isPhase6ATestVoice(accent, voice)) {
-      setAudioError(PHASE_6A_UNSUPPORTED_VOICE_MESSAGE);
-      return;
-    }
-
     speechInFlight.current = true;
     setIsSynthesizing(true);
     setAudioError(null);
@@ -248,8 +242,12 @@ function App() {
     try {
       const result = await synthesizeSpeech({ text: english, accent, voice });
       setAudioUrl(result.audioUrl);
-    } catch {
-      setAudioError(AUDIO_ERROR_MESSAGE);
+    } catch (error) {
+      setAudioError(
+        error instanceof Error && error.message === UNSUPPORTED_VOICE_MESSAGE
+          ? UNSUPPORTED_VOICE_MESSAGE
+          : AUDIO_ERROR_MESSAGE,
+      );
     } finally {
       speechInFlight.current = false;
       setIsSynthesizing(false);

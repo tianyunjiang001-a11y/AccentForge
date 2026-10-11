@@ -11,8 +11,11 @@ const config = {
 };
 
 const voiceProfiles: VoiceProfileMap = {
-  british: { female: "", male: "" },
-  american: { female: "", male: "" },
+  british: { female: "English_Graceful_Lady", male: "" },
+  american: {
+    female: "English_Whispering_girl",
+    male: "English_Trustworthy_Man",
+  },
   australian: { female: "", male: "English_Aussie_Bloke" },
   canadian: { female: "", male: "" },
 };
@@ -100,6 +103,36 @@ describe("MiniMaxSpeechProvider", () => {
     );
   });
 
+  it.each([
+    ["british", "female", "English_Graceful_Lady"],
+    ["american", "female", "English_Whispering_girl"],
+    ["american", "male", "English_Trustworthy_Man"],
+    ["australian", "male", "English_Aussie_Bloke"],
+  ] as const)(
+    "maps %s %s to the configured candidate ID",
+    async (accent, voice, expectedVoiceId) => {
+      const fetcher = vi
+        .fn<typeof fetch>()
+        .mockResolvedValue(successResponse());
+      const provider = new MiniMaxSpeechProvider(
+        config,
+        voiceProfiles,
+        fetcher,
+      );
+
+      await provider.synthesizeSpeech({
+        text: request.text,
+        accent,
+        voice,
+      });
+
+      const [, init] = fetcher.mock.calls[0];
+      expect(JSON.parse(String(init?.body)).voice_setting.voice_id).toBe(
+        expectedVoiceId,
+      );
+    },
+  );
+
   it("rejects an unconfigured voice before a network request", async () => {
     const fetcher = vi.fn<typeof fetch>();
     const provider = new MiniMaxSpeechProvider(config, voiceProfiles, fetcher);
@@ -107,7 +140,7 @@ describe("MiniMaxSpeechProvider", () => {
     await expect(
       provider.synthesizeSpeech({
         text: request.text,
-        accent: "british",
+        accent: "canadian",
         voice: "female",
       }),
     ).rejects.toEqual(expect.objectContaining({ code: "not-configured" }));
