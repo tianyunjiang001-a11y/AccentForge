@@ -27,6 +27,17 @@ beforeEach(() => {
       };
     }
 
+    if (String(input) === "/api/speech") {
+      return new Response(Uint8Array.from([0x49, 0x44, 0x33]), {
+        status: 200,
+        headers: {
+          "Content-Type": "audio/mpeg",
+          "X-Audio-Duration-Ms": "2450",
+          "X-Audio-Usage-Characters": "49",
+        },
+      });
+    }
+
     return { ok: false };
   });
   vi.stubGlobal("fetch", apiFetch);
@@ -55,8 +66,8 @@ async function buildEnglishAnswer() {
   return user;
 }
 
-describe("AccentForge Phase 5 workflow", () => {
-  it("uses real polish and generate endpoints while audio remains mocked", async () => {
+describe("AccentForge Phase 6A workflow", () => {
+  it("uses real endpoint contracts for polish, English and Australian male audio", async () => {
     const user = await buildEnglishAnswer();
 
     expect(apiFetch).toHaveBeenCalledTimes(2);
@@ -83,15 +94,90 @@ describe("AccentForge Phase 5 workflow", () => {
       }),
     );
 
-    await user.click(screen.getByRole("button", { name: "British" }));
-    await user.click(screen.getByRole("button", { name: "Female" }));
+    await user.click(screen.getByRole("button", { name: "Australian" }));
+    await user.click(screen.getByRole("button", { name: "Male" }));
 
     expect(document.querySelector("audio")).not.toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Read Aloud" }));
 
-    expect(document.querySelector("audio")).toBeInTheDocument();
-    expect(screen.getByText("British · Female")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(document.querySelector("audio")).toBeInTheDocument();
+    });
+    expect(screen.getByText("Australian · Male")).toBeInTheDocument();
+    expect(apiFetch).toHaveBeenLastCalledWith(
+      "/api/speech",
+      expect.objectContaining({
+        method: "POST",
+        body: JSON.stringify({
+          text: KIMI_SPOKEN_ENGLISH,
+          accent: "australian",
+          voice: "male",
+        }),
+      }),
+    );
     expect(URL.createObjectURL).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not call speech for the seven unsupported Phase 6A combinations", async () => {
+    const user = await buildEnglishAnswer();
+
+    await user.click(screen.getByRole("button", { name: "British" }));
+    await user.click(screen.getByRole("button", { name: "Female" }));
+    await user.click(screen.getByRole("button", { name: "Read Aloud" }));
+
+    expect(apiFetch).toHaveBeenCalledTimes(2);
+    expect(
+      screen.getByText(
+        "This voice is not available in the current test build. Choose Australian · Male.",
+      ),
+    ).toBeInTheDocument();
+    expect(document.querySelector("audio")).not.toBeInTheDocument();
+  });
+
+  it("prevents duplicate speech requests while synthesis is in flight", async () => {
+    let resolveSpeech: ((response: Response) => void) | undefined;
+    const pendingSpeech = new Promise<Response>((resolve) => {
+      resolveSpeech = resolve;
+    });
+    apiFetch.mockImplementation(async (input: RequestInfo | URL) => {
+      if (String(input) === "/api/polish") {
+        return {
+          ok: true,
+          json: async () => ({ structuredChinese: KIMI_STRUCTURED_CHINESE }),
+        };
+      }
+
+      if (String(input) === "/api/generate") {
+        return {
+          ok: true,
+          json: async () => ({ spokenEnglish: KIMI_SPOKEN_ENGLISH }),
+        };
+      }
+
+      return pendingSpeech;
+    });
+    const user = await buildEnglishAnswer();
+    await user.click(screen.getByRole("button", { name: "Australian" }));
+    await user.click(screen.getByRole("button", { name: "Male" }));
+
+    const readButton = screen.getByRole("button", { name: "Read Aloud" });
+    fireEvent.click(readButton);
+    fireEvent.click(readButton);
+
+    expect(apiFetch).toHaveBeenCalledTimes(3);
+    expect(
+      screen.getByRole("button", { name: "Generating audio…" }),
+    ).toBeDisabled();
+
+    resolveSpeech?.(
+      new Response(Uint8Array.from([0x49, 0x44, 0x33]), {
+        status: 200,
+        headers: { "Content-Type": "audio/mpeg" },
+      }),
+    );
+    await waitFor(() => {
+      expect(document.querySelector("audio")).toBeInTheDocument();
+    });
   });
 
   it("marks both generated stages stale when Target Band changes", async () => {
@@ -145,7 +231,9 @@ describe("AccentForge Phase 5 workflow", () => {
     await user.click(screen.getByRole("button", { name: "Australian" }));
     await user.click(screen.getByRole("button", { name: "Male" }));
     await user.click(screen.getByRole("button", { name: "Read Aloud" }));
-    expect(document.querySelector("audio")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(document.querySelector("audio")).toBeInTheDocument();
+    });
 
     await user.click(screen.getByRole("button", { name: "Female" }));
 
@@ -244,5 +332,36 @@ describe("AccentForge Phase 5 workflow", () => {
       ),
     ).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Read Aloud" })).toBeDisabled();
+  });
+
+  it("shows a restrained error when speech generation fails", async () => {
+    apiFetch.mockImplementation(async (input: RequestInfo | URL) => {
+      if (String(input) === "/api/polish") {
+        return {
+          ok: true,
+          json: async () => ({ structuredChinese: KIMI_STRUCTURED_CHINESE }),
+        };
+      }
+
+      if (String(input) === "/api/generate") {
+        return {
+          ok: true,
+          json: async () => ({ spokenEnglish: KIMI_SPOKEN_ENGLISH }),
+        };
+      }
+
+      return { ok: false };
+    });
+    const user = await buildEnglishAnswer();
+    await user.click(screen.getByRole("button", { name: "Australian" }));
+    await user.click(screen.getByRole("button", { name: "Male" }));
+    await user.click(screen.getByRole("button", { name: "Read Aloud" }));
+
+    expect(
+      await screen.findByText(
+        "Audio could not be generated. Please try again.",
+      ),
+    ).toBeInTheDocument();
+    expect(document.querySelector("audio")).not.toBeInTheDocument();
   });
 });
