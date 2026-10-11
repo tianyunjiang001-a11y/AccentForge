@@ -8,12 +8,13 @@ const config = {
   apiKey: "test-key",
   baseUrl: "https://api.minimax.test",
   model: "speech-2.8-turbo",
+  speed: 1,
 };
 
 const voiceProfiles: VoiceProfileMap = {
   british: { female: "English_Graceful_Lady", male: "" },
   american: {
-    female: "English_Whispering_girl",
+    female: "",
     male: "English_Trustworthy_Man",
   },
   australian: { female: "", male: "English_Aussie_Bloke" },
@@ -105,7 +106,6 @@ describe("MiniMaxSpeechProvider", () => {
 
   it.each([
     ["british", "female", "English_Graceful_Lady"],
-    ["american", "female", "English_Whispering_girl"],
     ["american", "male", "English_Trustworthy_Man"],
     ["australian", "male", "English_Aussie_Bloke"],
   ] as const)(
@@ -132,6 +132,20 @@ describe("MiniMaxSpeechProvider", () => {
       );
     },
   );
+
+  it("uses the environment-configured speech speed", async () => {
+    const fetcher = vi.fn<typeof fetch>().mockResolvedValue(successResponse());
+    const provider = new MiniMaxSpeechProvider(
+      { ...config, speed: 0.52 },
+      voiceProfiles,
+      fetcher,
+    );
+
+    await provider.synthesizeSpeech(request);
+
+    const [, init] = fetcher.mock.calls[0];
+    expect(JSON.parse(String(init?.body)).voice_setting.speed).toBe(0.52);
+  });
 
   it("rejects an unconfigured voice before a network request", async () => {
     const fetcher = vi.fn<typeof fetch>();

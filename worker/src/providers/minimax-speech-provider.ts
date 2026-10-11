@@ -43,7 +43,7 @@ export class MiniMaxSpeechProvider implements SpeechSynthesisProvider {
           stream: false,
           voice_setting: {
             voice_id: voiceId,
-            speed: 1,
+            speed: this.config.speed,
             vol: 1,
             pitch: 0,
           },

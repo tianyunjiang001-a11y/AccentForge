@@ -1,0 +1,33 @@
+{
+  "evaluatedAt": "2026-10-12T02:20:00+08:00",
+  "model": "speech-2.8-turbo",
+  "configuredSpeed": 0.52,
+  "outputDirectory": "C:\\Users\\A\\AppData\\Local\\Temp\\accentforge-phase6b-audio",
+  "kimiRequests": 0,
+  "results": [
+    {
+      "id": "p2-old-camera-band7",
+      "status": 200,
+      "configuredSpeed": 0.52,
+      "wordCount": 226,
+      "previousDurationMs": 57240,
+      "audioDurationMs": 112392,
+      "usageCharacters": 1141,
+      "audioBytes": 1799988,
+      "audioReference": "speed-0.52-p2-old-camera-band7-australian-male.mp3",
+      "error": null
+    },
+    {
+      "id": "p2-cooking-skill-band8",
+      "status": 200,
+      "configuredSpeed": 0.52,
+      "wordCount": 213,
+      "previousDurationMs": 62892,
+      "audioDurationMs": 122760,
+      "usageCharacters": 1171,
+      "audioBytes": 1965876,
+      "audioReference": "speed-0.52-p2-cooking-skill-band8-australian-male.mp3",
+      "error": null
+    }
+  ]
+}

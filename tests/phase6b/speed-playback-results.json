@@ -1,0 +1,30 @@
+{
+  "evaluatedAt": "2026-10-12T02:30:00+08:00",
+  "browser": "Chrome headless",
+  "results": [
+    {
+      "audioReference": "speed-0.52-p2-old-camera-band7-australian-male.mp3",
+      "status": "playing",
+      "durationSeconds": 112.392,
+      "readyState": 4
+    },
+    {
+      "audioReference": "speed-0.52-p2-cooking-skill-band8-australian-male.mp3",
+      "status": "playing",
+      "durationSeconds": 122.76,
+      "readyState": 4
+    },
+    {
+      "audioReference": "speed-0.53-p2-old-camera-band7-australian-male.mp3",
+      "status": "playing",
+      "durationSeconds": 103.14,
+      "readyState": 4
+    },
+    {
+      "audioReference": "speed-0.53-p2-cooking-skill-band8-australian-male.mp3",
+      "status": "playing",
+      "durationSeconds": 116.82,
+      "readyState": 4
+    }
+  ]
+}

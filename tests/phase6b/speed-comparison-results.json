@@ -1,0 +1,51 @@
+{
+  "evaluatedAt": "2026-10-12T02:20:00+08:00",
+  "model": "speech-2.8-turbo",
+  "voiceId": "English_Aussie_Bloke",
+  "kimiRequests": 0,
+  "sameEnglishInputsAsInitialPart2Validation": true,
+  "results": [
+    {
+      "configuredSpeed": 0.52,
+      "cases": [
+        {
+          "id": "p2-old-camera-band7",
+          "wordCount": 226,
+          "audioDurationMs": 112392,
+          "usageCharacters": 1141,
+          "audioReference": "speed-0.52-p2-old-camera-band7-australian-male.mp3"
+        },
+        {
+          "id": "p2-cooking-skill-band8",
+          "wordCount": 213,
+          "audioDurationMs": 122760,
+          "usageCharacters": 1171,
+          "audioReference": "speed-0.52-p2-cooking-skill-band8-australian-male.mp3"
+        }
+      ],
+      "averageDurationMs": 117576,
+      "assessment": "Provisional baseline. The 1:52 and 2:03 results average approximately 1:58 and are closest to the requested 1:55 target without changing English content."
+    },
+    {
+      "configuredSpeed": 0.53,
+      "cases": [
+        {
+          "id": "p2-old-camera-band7",
+          "wordCount": 226,
+          "audioDurationMs": 103140,
+          "usageCharacters": 1141,
+          "audioReference": "speed-0.53-p2-old-camera-band7-australian-male.mp3"
+        },
+        {
+          "id": "p2-cooking-skill-band8",
+          "wordCount": 213,
+          "audioDurationMs": 116820,
+          "usageCharacters": 1171,
+          "audioReference": "speed-0.53-p2-cooking-skill-band8-australian-male.mp3"
+        }
+      ],
+      "averageDurationMs": 109980,
+      "assessment": "Comparison only. The 1:43 and 1:57 results show that duration is not strictly linear or deterministic across generations."
+    }
+  ]
+}

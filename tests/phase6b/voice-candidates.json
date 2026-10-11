@@ -16,9 +16,9 @@
   {
     "accent": "american",
     "voice": "female",
-    "voiceId": "English_Whispering_girl",
-    "status": "candidate",
-    "officialEvidence": "MiniMax voice-list API describes this system voice as a young female whispering voice with a General American accent. IELTS suitability requires human listening."
+    "voiceId": null,
+    "status": "rejected-unresolved",
+    "officialEvidence": "English_Whispering_girl was rejected by human review because it is too quiet and thin. MiniMax describes it as a whispering General American ASMR voice. The official American voice page exposes English_compelling_lady1, but that ID is not available in the current China Mainland account voice-list response."
   },
   {
     "accent": "american",

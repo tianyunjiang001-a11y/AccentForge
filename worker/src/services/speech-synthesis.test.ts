@@ -10,7 +10,7 @@ import {
 const voiceProfiles: VoiceProfileMap = {
   british: { female: "English_Graceful_Lady", male: "" },
   american: {
-    female: "English_Whispering_girl",
+    female: "",
     male: "English_Trustworthy_Man",
   },
   australian: { female: "", male: "English_Aussie_Bloke" },
