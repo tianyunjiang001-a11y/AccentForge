@@ -25,11 +25,10 @@ describe("ChineseIdeaStructuringService", () => {
     const request = generateText.mock.calls[0][0];
     expect(request.systemPrompt).toContain("Part 2");
     expect(request.systemPrompt).toContain("Target Band 8");
-    expect(request.systemPrompt).toContain("不得虚构");
-    expect(request.systemPrompt).toContain("每一项个人事实都必须能追溯");
-    expect(request.systemPrompt).toContain(
-      "材料不足时允许答案明显短于目标时长",
-    );
+    expect(request.systemPrompt).toContain("教学脚手架");
+    expect(request.systemPrompt).toContain("一两个有用的细节");
+    expect(request.systemPrompt).toContain("中高强度、受控的叙事补充");
+    expect(request.systemPrompt).toContain("严重疾病");
     expect(request.userPrompt).toContain("城市，工作多，压力，也方便。");
     expect(request.outputSchema?.schema).toEqual(
       expect.objectContaining({ additionalProperties: false }),

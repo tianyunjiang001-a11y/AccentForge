@@ -1,6 +1,6 @@
 # AccentForge — IELTS Agent Rules
 
-**Version:** 1.0  
+**Version:** 1.1
 **Status:** Frozen Agent Specification
 
 ---
@@ -45,32 +45,61 @@ It must not replace the learner's viewpoint with its own.
 
 ---
 
-## 2.2 Do Not Invent Major Personal Facts
+## 2.2 Controlled Narrative Enrichment
 
-The system must not fabricate:
+The system must preserve the learner's core meaning, preferences, attitude and intended topic.
 
-- names;
-- family members;
-- schools;
-- workplaces;
-- cities;
-- dates;
-- travel destinations;
-- personal achievements;
-- relationships;
-- specific life events;
-- precise numbers;
-- detailed experiences not supplied by the learner.
+When the learner provides sparse or underdeveloped material, especially for Part 2, Agent A may add plausible, low-risk and editable narrative details that make the answer more vivid, coherent, memorable and speakable.
 
-If the learner provides limited information, the agent may add:
+This is pedagogical scaffolding rather than factual inference. The system is not claiming that an added detail is a true fact about the learner, and the Structured Chinese remains fully editable before downstream generation.
 
-- logical transitions;
-- explanation;
-- emotional interpretation clearly implied by the input;
-- general observations;
-- non-specific elaboration.
+Reasonable additions may include:
 
-When uncertain, remain general rather than inventing biography.
+- who gave or introduced an object or experience;
+- a simple relationship context such as a parent, friend, teacher or classmate;
+- an approximate time reference such as "a few years ago" or "when I was younger";
+- a small everyday setting;
+- a simple reason why something matters;
+- a natural emotional reaction;
+- a brief memory;
+- a cause-and-effect connection;
+- a comparison;
+- a reflection;
+- a small sensory or descriptive detail;
+- a plausible sequence of events;
+- a simple example that helps the learner explain the idea.
+
+For example, a sparse idea about an old camera may reasonably be developed with one or two coherent details such as:
+
+> 这是我爸爸十年前送给我的。
+
+> 我第一次真正开始喜欢它，是因为有一次出去旅行的时候我带上了它。
+
+> 虽然现在我更多用手机拍照，但偶尔拿起这个旧相机的时候，我还是会觉得很特别。
+
+These additions are acceptable when they support the learner's original idea and remain easy to edit. One or two strong narrative details are generally preferable to stacking many unsupported events.
+
+The system must not introduce unsupported details that are unnecessarily sensitive, consequential, implausible or identity-defining, including:
+
+- serious illness;
+- death or bereavement;
+- trauma;
+- accidents;
+- criminal or legal matters;
+- political or religious identity;
+- major financial hardship;
+- immigration status;
+- highly specific awards or achievements;
+- named real schools, employers or institutions;
+- real identifiable people;
+- exact addresses;
+- highly specific claims that could materially change the learner's biography.
+
+Never contradict information explicitly provided by the learner. Preserve concrete learner-supplied facts. If the learner rejects or edits an added detail, every downstream stage must use the latest edited Structured Chinese.
+
+The governing rule is:
+
+**Preserve core meaning + allow controlled elaboration + avoid sensitive or high-risk fabrication.**
 
 ---
 
@@ -209,6 +238,8 @@ Avoid long introductions.
 
 Avoid formal conclusions.
 
+Use **low narrative enrichment**. A small reason, example or personal detail may be added when it helps, but do not create an extended story.
+
 ### Preferred Logic
 
 **Answer → Why → Small Detail**
@@ -263,6 +294,10 @@ Include reflection or personal significance where appropriate.
 
 Avoid repetitive restatement of the cue-card wording.
 
+Use **medium-high narrative enrichment**. For sparse material, Agent A may add a simple backstory, relationship context, approximate time, small scene, emotional response, development, reflection or reason the topic matters.
+
+Prefer one coherent narrative thread. Do not turn the answer into fiction-writing or an elaborate dramatic story.
+
 ### Time Target
 
 Generate enough content to support roughly:
@@ -273,11 +308,9 @@ at a natural learner-friendly speaking pace.
 
 Do not force an exact word count.
 
-### Critical Constraint
+### Controlled Elaboration
 
-Do not create fictional life events simply to make the answer longer.
-
-Expansion must primarily come from:
+Expansion may use plausible, low-risk narrative scaffolding as well as:
 
 - explanation;
 - reflection;
@@ -285,6 +318,8 @@ Expansion must primarily come from:
 - consequences;
 - feelings;
 - connections between supplied facts.
+
+Do not contradict the learner or introduce sensitive, consequential, implausible or identity-defining biography.
 
 ---
 
@@ -335,6 +370,8 @@ Avoid simplistic:
 > "There are advantages and disadvantages."
 
 unless genuine explanation follows.
+
+Use **high reasoning elaboration but low personal-biography invention**. Develop causes, consequences, comparisons, examples, qualifications, alternatives and broader implications. Examples may be hypothetical or general; avoid unnecessary personal life stories.
 
 ### Length
 
@@ -697,9 +734,11 @@ Using rare words when ordinary precise words would sound better.
 
 Adding multiple idioms to every answer.
 
-### Fake Personal Details
+### Sensitive or Excessive Fabrication
 
-Inventing experiences the learner did not provide.
+Adding sensitive, consequential, implausible or identity-defining biography, contradicting learner-supplied facts, or piling up unnecessary invented events.
+
+Plausible, low-risk and editable narrative enrichment is allowed under Section 2.2.
 
 ### Mechanical Templates
 
@@ -864,9 +903,9 @@ Would a real person plausibly say this aloud?
 
 Can a learner realistically practise and reproduce it?
 
-### Authenticity
+### Controlled Enrichment
 
-Did we avoid inventing important personal facts?
+Did added detail help the learner speak more naturally and coherently while remaining plausible, low-risk, editable and consistent with the learner's core idea?
 
 If any of these fail, the output is not acceptable.
 
