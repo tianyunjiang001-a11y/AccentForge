@@ -1,0 +1,43 @@
+{
+  "verifiedAt": "2026-10-12T02:04:00+08:00",
+  "browser": "Google Chrome headless",
+  "method": "Local-only playback fixture; muted HTMLAudioElement.play() with metadata validation",
+  "results": [
+    {
+      "file": "audition-british-female.mp3",
+      "result": "playing",
+      "readyState": 4,
+      "browserDurationSeconds": 16.207531
+    },
+    {
+      "file": "audition-american-female.mp3",
+      "result": "playing",
+      "readyState": 4,
+      "browserDurationSeconds": 15.824406
+    },
+    {
+      "file": "audition-american-male.mp3",
+      "result": "playing",
+      "readyState": 4,
+      "browserDurationSeconds": 12.364656
+    },
+    {
+      "file": "audition-australian-male.mp3",
+      "result": "playing",
+      "readyState": 4,
+      "browserDurationSeconds": 9.253469
+    },
+    {
+      "file": "p2-old-camera-band7-australian-male.mp3",
+      "result": "playing",
+      "readyState": 4,
+      "browserDurationSeconds": 57.24
+    },
+    {
+      "file": "p2-cooking-skill-band8-australian-male.mp3",
+      "result": "playing",
+      "readyState": 4,
+      "browserDurationSeconds": 62.892
+    }
+  ]
+}

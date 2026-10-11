@@ -89,6 +89,7 @@ for (const [index, testCase] of part2Cases.entries()) {
     }),
   });
   const generateBody = await generateResponse.json();
+  const generationDurationMs = Date.now() - generationStartedAt;
   const spokenEnglish =
     typeof generateBody.spokenEnglish === "string"
       ? generateBody.spokenEnglish
@@ -98,7 +99,7 @@ for (const [index, testCase] of part2Cases.entries()) {
     part2Results.push({
       ...testCase,
       generationStatus: generateResponse.status,
-      generationDurationMs: Date.now() - generationStartedAt,
+      generationDurationMs,
       spokenEnglish: null,
       wordCount: null,
       speechStatus: null,
@@ -126,7 +127,7 @@ for (const [index, testCase] of part2Cases.entries()) {
   part2Results.push({
     ...testCase,
     generationStatus: generateResponse.status,
-    generationDurationMs: Date.now() - generationStartedAt,
+    generationDurationMs,
     spokenEnglish,
     wordCount: countWords(spokenEnglish),
     speechStatus: speechResult.status,
