@@ -1,0 +1,76 @@
+import type { Accent, Voice } from "../types";
+
+export const AUDIO_ERROR_MESSAGE =
+  "Audio could not be generated. Please try again.";
+export const PHASE_6A_UNSUPPORTED_VOICE_MESSAGE =
+  "This voice is not available in the current test build. Choose Australian · Male.";
+
+interface SynthesizeSpeechInput {
+  text: string;
+  accent: Accent;
+  voice: Voice;
+}
+
+export interface SynthesizedAudio {
+  audioUrl: string;
+  durationMs: number | null;
+  usageCharacters: number | null;
+}
+
+export function isPhase6ATestVoice(accent: Accent, voice: Voice) {
+  return accent === "Australian" && voice === "Male";
+}
+
+export async function synthesizeSpeech(
+  input: SynthesizeSpeechInput,
+): Promise<SynthesizedAudio> {
+  let response: Response;
+
+  try {
+    response = await fetch("/api/speech", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        text: input.text,
+        accent: input.accent.toLowerCase(),
+        voice: input.voice.toLowerCase(),
+      }),
+    });
+  } catch {
+    throw new Error(AUDIO_ERROR_MESSAGE);
+  }
+
+  if (!response.ok) {
+    throw new Error(AUDIO_ERROR_MESSAGE);
+  }
+
+  const contentType = response.headers.get("content-type") ?? "";
+
+  if (!contentType.toLowerCase().startsWith("audio/mpeg")) {
+    throw new Error(AUDIO_ERROR_MESSAGE);
+  }
+
+  const audio = await response.blob();
+
+  if (audio.size === 0) {
+    throw new Error(AUDIO_ERROR_MESSAGE);
+  }
+
+  return {
+    audioUrl: URL.createObjectURL(audio),
+    durationMs: parseMetric(response.headers.get("x-audio-duration-ms")),
+    usageCharacters: parseMetric(
+      response.headers.get("x-audio-usage-characters"),
+    ),
+  };
+}
+
+function parseMetric(value: string | null) {
+  if (value === null) {
+    return null;
+  }
+
+  const parsed = Number(value);
+
+  return Number.isFinite(parsed) && parsed >= 0 ? parsed : null;
+}

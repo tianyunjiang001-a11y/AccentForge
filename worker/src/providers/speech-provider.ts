@@ -11,6 +11,8 @@ export interface SpeechSynthesisRequest {
 export interface SpeechSynthesisResult {
   audio: ArrayBuffer;
   contentType: string;
+  durationMs?: number;
+  usageCharacters?: number;
 }
 
 export interface SpeechSynthesisProvider {

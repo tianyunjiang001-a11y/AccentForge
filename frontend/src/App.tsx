@@ -8,8 +8,13 @@ import {
   generateEnglish,
 } from "./services/generateEnglish";
 import { POLISH_ERROR_MESSAGE, polishIdea } from "./services/polishIdea";
+import {
+  AUDIO_ERROR_MESSAGE,
+  isPhase6ATestVoice,
+  PHASE_6A_UNSUPPORTED_VOICE_MESSAGE,
+  synthesizeSpeech,
+} from "./services/synthesizeSpeech";
 import type { Accent, SpeakingPart, TargetBand, Voice } from "./types";
-import { createMockAudioUrl } from "./utils/mockAudio";
 
 const partOptions: readonly SpeakingPart[] = ["Part 1", "Part 2", "Part 3"];
 const bandOptions: readonly TargetBand[] = ["5", "6", "7", "8", "9"];
@@ -69,13 +74,16 @@ function App() {
   const [englishFor, setEnglishFor] = useState<EnglishContext | null>(null);
   const [isPolishing, setIsPolishing] = useState(false);
   const [isGeneratingEnglish, setIsGeneratingEnglish] = useState(false);
+  const [isSynthesizing, setIsSynthesizing] = useState(false);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [polishError, setPolishError] = useState<string | null>(null);
   const [generateError, setGenerateError] = useState<string | null>(null);
+  const [audioError, setAudioError] = useState<string | null>(null);
   const polishInFlight = useRef(false);
   const generateInFlight = useRef(false);
+  const speechInFlight = useRef(false);
 
-  const isBusy = isPolishing || isGeneratingEnglish;
+  const isBusy = isPolishing || isGeneratingEnglish || isSynthesizing;
   const hasPolished = polishedFor !== null;
   const isPolishedStale =
     hasPolished && (polishedFor.part !== part || polishedFor.band !== band);
@@ -131,6 +139,7 @@ function App() {
     setPart(nextPart);
     setPolishError(null);
     setGenerateError(null);
+    setAudioError(null);
     invalidateAudio();
   }
 
@@ -138,6 +147,7 @@ function App() {
     setBand(nextBand);
     setPolishError(null);
     setGenerateError(null);
+    setAudioError(null);
     invalidateAudio();
   }
 
@@ -145,6 +155,7 @@ function App() {
     setChinese(Array.from(value).slice(0, 1000).join(""));
     setPolishError(null);
     setGenerateError(null);
+    setAudioError(null);
     invalidateAudio();
   }
 
@@ -156,6 +167,7 @@ function App() {
     polishInFlight.current = true;
     setIsPolishing(true);
     setPolishError(null);
+    setAudioError(null);
     invalidateAudio();
 
     try {
@@ -185,6 +197,7 @@ function App() {
     generateInFlight.current = true;
     setIsGeneratingEnglish(true);
     setGenerateError(null);
+    setAudioError(null);
     invalidateAudio();
 
     try {
@@ -206,20 +219,41 @@ function App() {
 
   function handleAccentChange(nextAccent: Accent) {
     setAccent(nextAccent);
+    setAudioError(null);
     invalidateAudio();
   }
 
   function handleVoiceChange(nextVoice: Voice) {
     setVoice(nextVoice);
+    setAudioError(null);
     invalidateAudio();
   }
 
-  function handleReadAloud() {
-    if (!accent || !voice || !canReadAloud) {
+  async function handleReadAloud() {
+    if (!accent || !voice || !canReadAloud || speechInFlight.current) {
       return;
     }
 
-    setAudioUrl(createMockAudioUrl(accent, voice));
+    invalidateAudio();
+
+    if (!isPhase6ATestVoice(accent, voice)) {
+      setAudioError(PHASE_6A_UNSUPPORTED_VOICE_MESSAGE);
+      return;
+    }
+
+    speechInFlight.current = true;
+    setIsSynthesizing(true);
+    setAudioError(null);
+
+    try {
+      const result = await synthesizeSpeech({ text: english, accent, voice });
+      setAudioUrl(result.audioUrl);
+    } catch {
+      setAudioError(AUDIO_ERROR_MESSAGE);
+    } finally {
+      speechInFlight.current = false;
+      setIsSynthesizing(false);
+    }
   }
 
   return (
@@ -315,10 +349,20 @@ function App() {
               onClick={handleReadAloud}
               type="button"
             >
-              <PlayIcon />
-              Read Aloud
+              {isSynthesizing ? (
+                <span aria-hidden="true" className="spinner" />
+              ) : (
+                <PlayIcon />
+              )}
+              {isSynthesizing ? "Generating audio…" : "Read Aloud"}
             </button>
           </div>
+
+          {audioError ? (
+            <p className="voice-feedback" role="alert">
+              {audioError}
+            </p>
+          ) : null}
 
           {audioUrl && accent && voice ? (
             <div className="audio-result" aria-live="polite">
@@ -327,7 +371,7 @@ function App() {
                   {accent} · {voice}
                 </p>
                 <p className="audio-result__note">
-                  Browser-generated placeholder audio for the mock workflow.
+                  Ready for listening and shadowing.
                 </p>
               </div>
               <audio autoPlay controls controlsList="nodownload" src={audioUrl}>

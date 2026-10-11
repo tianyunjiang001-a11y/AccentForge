@@ -319,6 +319,13 @@ textarea:focus-visible,
   min-width: 170px;
 }
 
+.voice-feedback {
+  margin: 18px 0 0;
+  color: rgb(29 29 31 / 68%);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
 .audio-result {
   display: flex;
   align-items: center;
