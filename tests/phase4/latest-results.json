@@ -1,0 +1,174 @@
+{
+  "evaluatedAt": "2026-10-11T15:02:59.001Z",
+  "apiBaseUrl": "http://127.0.0.1:8787",
+  "caseDelayMs": 21000,
+  "successfulCases": 15,
+  "totalCases": 15,
+  "results": [
+    {
+      "id": "p1-short-coffee",
+      "part": 1,
+      "targetBand": 5,
+      "category": "very short",
+      "rawChinese": "我喜欢咖啡。",
+      "status": 200,
+      "durationMs": 4991,
+      "structuredChinese": "我喜欢咖啡，因为它能让我早上精神一点，特别是工作特别困的时候喝一杯就舒服多了。",
+      "error": null
+    },
+    {
+      "id": "p1-fragmented-city",
+      "part": 1,
+      "targetBand": 6,
+      "category": "fragmented",
+      "rawChinese": "住大城市，方便，工作多，人太多，有点吵。",
+      "status": 200,
+      "durationMs": 1512,
+      "structuredChinese": "我住在大城市，主要是因为生活方便，工作机会也比较多。不过人确实太多了，有时候会有点吵。",
+      "error": null
+    },
+    {
+      "id": "p1-repetitive-exercise",
+      "part": 1,
+      "targetBand": 7,
+      "category": "repetitive",
+      "rawChinese": "我会运动，因为运动让我放松，我喜欢运动，运动以后心情好。",
+      "status": 200,
+      "durationMs": 1143,
+      "structuredChinese": "我会运动，因为运动能让我放松。我喜欢运动完之后那种心情变好的感觉。",
+      "error": null
+    },
+    {
+      "id": "p1-colloquial-weekend",
+      "part": 1,
+      "targetBand": 8,
+      "category": "colloquial",
+      "rawChinese": "周末嘛就宅着呗，有时候刷刷剧，累了一周真的不想折腾。",
+      "status": 200,
+      "durationMs": 1495,
+      "structuredChinese": "周末我基本就宅在家里，累了一周实在不想折腾。偶尔刷刷剧，算是给自己彻底放空一下。",
+      "error": null
+    },
+    {
+      "id": "p1-ambiguous-reading",
+      "part": 1,
+      "targetBand": 9,
+      "category": "ambiguous",
+      "rawChinese": "还行吧，以前不太喜欢，现在偶尔会看，主要看状态。",
+      "status": 200,
+      "durationMs": 1581,
+      "structuredChinese": "还行吧，以前不太喜欢，现在偶尔会看。主要看当时的状态，状态对了就看看，不对的话还是算了。",
+      "error": null
+    },
+    {
+      "id": "p2-personal-teacher",
+      "part": 2,
+      "targetBand": 5,
+      "category": "personal experience",
+      "rawChinese": "想说一个帮助过我的老师。上课很耐心，我不敢提问的时候会鼓励我，所以后来更有信心。",
+      "status": 200,
+      "durationMs": 10168,
+      "structuredChinese": "我想说说一位帮助过我的老师。她上课特别耐心，这点让我印象很深。我以前不太敢提问，怕问的问题太简单或者打扰别人，但她会主动鼓励我，让我不用怕，有问题就问。慢慢地，我就更有信心了，上课也更愿意参与。我觉得她能注意到学生的紧张，还愿意花时间鼓励你，这一点挺难得的。",
+      "error": null
+    },
+    {
+      "id": "p2-poorly-organised-trip",
+      "part": 2,
+      "targetBand": 6,
+      "category": "poorly organised",
+      "rawChinese": "去年和朋友去海边，天气热，人不少，第一次看日出，很早起床，但是值得，回来很累。",
+      "status": 200,
+      "durationMs": 2607,
+      "structuredChinese": "去年和朋友去了一次海边，那时候天气挺热的，海边的人也不少。我们那次是第一次看日出，所以很早就起床了，说实话挺折腾的，但看到日出的时候觉得还是值得的。不过回来之后就真的很累，毕竟起得太早了，又玩了一整天。",
+      "error": null
+    },
+    {
+      "id": "p2-fragmented-object",
+      "part": 2,
+      "targetBand": 7,
+      "category": "fragmented",
+      "rawChinese": "旧相机，家里找到的，不贵，拍出来颜色特别，带出去麻烦，但我喜欢。",
+      "status": 200,
+      "durationMs": 3557,
+      "structuredChinese": "我家有台旧相机，是以前在家里翻东西的时候找到的。它其实不贵，也不是什么名贵型号，但拍出来的颜色特别不一样，有种复古的感觉，跟现在手机拍出来的效果完全不同。不过说实话，带出去确实挺麻烦的，比手机重多了，还要另外装电池、存照片，有时候想随手拍点什么，掏出来就已经错过了那个瞬间。但我还是喜欢用它，可能是因为那种慢慢拍照的感觉吧，会让我更认真地去想构图、想光线，而不是随便按一下快门就算了。对我来说，这台相机不只是个拍照工具，更像是一种提醒，让我不要什么都追求方便和快速。",
+      "error": null
+    },
+    {
+      "id": "p2-repetitive-event",
+      "part": 2,
+      "targetBand": 8,
+      "category": "repetitive",
+      "rawChinese": "一次比赛让我很紧张，真的很紧张，准备很久，最后完成了，不是第一名但还是开心。",
+      "status": 200,
+      "durationMs": 4492,
+      "structuredChinese": "有一次比赛让我印象特别深，主要是因为那种紧张感——现在回想起来都觉得挺真实的。为了那次比赛我准备了很久，久到中间有好几次都在想，要是最后结果不好，这些时间是不是就白费了。但真正上场的时候反而顾不了那么多，就想着把该做的做完。最后不是第一名，但完成的那一刻还是开心的，那种开心跟名次关系不大，更像是——我终于把这件让自己很紧张的事情给扛下来了。现在觉得，有时候准备的过程本身就已经在改变你了，结果反而不是最重要的。",
+      "error": null
+    },
+    {
+      "id": "p2-incomplete-hobby",
+      "part": 2,
+      "targetBand": 9,
+      "category": "incomplete reasoning",
+      "rawChinese": "最近开始做饭，因为外卖吃腻了。第一次很失败，后来好一点，现在觉得有意思，也可能更健康。",
+      "status": 200,
+      "durationMs": 3010,
+      "structuredChinese": "最近开始自己做饭，主要是因为外卖实在吃腻了，天天点来吃来吃去就那几样。第一次下厨的时候挺失败的，具体怎么失败的我也不太想细说，反正就是做出来的东西完全没法吃。不过后来慢慢好一点了，现在反而觉得做饭这件事挺有意思的，而且自己弄的话，应该也会比外卖更健康一些吧。",
+      "error": null
+    },
+    {
+      "id": "p3-short-remote-work",
+      "part": 3,
+      "targetBand": 5,
+      "category": "very short abstract",
+      "rawChinese": "远程工作方便，但是沟通难。",
+      "status": 200,
+      "durationMs": 5589,
+      "structuredChinese": "我觉得远程工作确实挺方便的，不用每天通勤，时间也比较自由。但问题是沟通起来确实比较难，因为不能面对面交流，有时候发消息或者开视频会议，感觉没有当面聊那么直接，信息可能会传错，或者反馈不够及时。所以方便是方便，但沟通这块确实是个麻烦。",
+      "error": null
+    },
+    {
+      "id": "p3-fragmented-technology",
+      "part": 3,
+      "targetBand": 6,
+      "category": "fragmented abstract reasoning",
+      "rawChinese": "科技，生活方便，老人不会用，差距，也不能不用。",
+      "status": 200,
+      "durationMs": 4280,
+      "structuredChinese": "我觉得科技确实让生活方便了很多，但问题也挺明显的，就是很多老人根本不会用这些新东西。这样一来，年轻人和老年人之间就有了很大的差距。不过话说回来，现在很多事情又离不开科技，比如看病挂号、买东西付款，你不用都不行。所以老人就算不想学，最后可能也得硬着头皮去适应，这对他们来说其实挺难的。",
+      "error": null
+    },
+    {
+      "id": "p3-repetitive-public-transport",
+      "part": 3,
+      "targetBand": 7,
+      "category": "repetitive reasoning",
+      "rawChinese": "政府应该发展公共交通，因为交通重要，公共交通能减少堵车，所以应该多发展公共交通。",
+      "status": 200,
+      "durationMs": 9615,
+      "structuredChinese": "我觉得政府确实应该多发展公共交通，主要就是因为交通问题太重要了。现在城市里的堵车越来越严重，公共交通如果做得好的话，可以直接减少路上的私家车数量，这样拥堵就能缓解不少。不过话说回来，发展公共交通不只是多修几条地铁或者多买几辆公交车那么简单，还得考虑线路规划是不是合理、覆盖范围够不够广，不然大家还是宁愿自己开车。所以我觉得政府在这方面的投入是值得的，但关键是要让公共交通真正方便到让人愿意放弃开车。",
+      "error": null
+    },
+    {
+      "id": "p3-colloquial-education",
+      "part": 3,
+      "targetBand": 8,
+      "category": "colloquial abstract reasoning",
+      "rawChinese": "学校光教考试那套肯定不够啊，学生以后还得工作、跟人合作，但基础知识也不能丢。",
+      "status": 200,
+      "durationMs": 2267,
+      "structuredChinese": "我觉得光教考试那套肯定不够，毕竟学生以后还得工作、跟人打交道，这些能力学校也得培养。不过话说回来，基础知识也不能丢，它其实是后面那些软技能的底子，两边得兼顾，不能偏废。",
+      "error": null
+    },
+    {
+      "id": "p3-ambiguous-city-policy",
+      "part": 3,
+      "targetBand": 9,
+      "category": "ambiguous and qualified reasoning",
+      "rawChinese": "限制私家车可能有用，但也不一定公平。市中心可以，住得远的人怎么办，还要看公共交通够不够。",
+      "status": 200,
+      "durationMs": 3678,
+      "structuredChinese": "限制私家车我觉得可能有用，但也不一定公平。市中心的话，车多路堵，限行或者收费确实能缓解，这个我理解。但住得远的人怎么办？他们可能根本没有地铁或者公交直达，通勤时间本来就长，如果再不让开车，那上班、接送孩子都很麻烦。所以关键还是要看公共交通够不够、好不好。如果公交系统跟得上，大家有替代选择，那限制私家车才说得过去；不然就是变相给一部分人增加负担，效果也未必好。",
+      "error": null
+    }
+  ]
+}

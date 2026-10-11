@@ -1,11 +1,21 @@
 import { readFile } from "node:fs/promises";
 
 const apiBaseUrl = process.env.PHASE4_API_URL ?? "http://127.0.0.1:8787";
+const caseDelayMs = Number(process.env.PHASE4_CASE_DELAY_MS ?? "21000");
 const casesUrl = new URL("./qa-cases.json", import.meta.url);
 const cases = JSON.parse(await readFile(casesUrl, "utf8"));
 const results = [];
 
-for (const testCase of cases) {
+if (!Number.isFinite(caseDelayMs) || caseDelayMs < 0) {
+  throw new Error("PHASE4_CASE_DELAY_MS must be a non-negative number.");
+}
+
+for (const [index, testCase] of cases.entries()) {
+  if (index > 0 && caseDelayMs > 0) {
+    await new Promise((resolve) => setTimeout(resolve, caseDelayMs));
+  }
+
+  console.error(`Running ${testCase.id} (${index + 1}/${cases.length})`);
   const startedAt = Date.now();
 
   try {
@@ -50,6 +60,7 @@ console.log(
     {
       evaluatedAt: new Date().toISOString(),
       apiBaseUrl,
+      caseDelayMs,
       successfulCases,
       totalCases: results.length,
       results,

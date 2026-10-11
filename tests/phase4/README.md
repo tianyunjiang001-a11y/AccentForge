@@ -6,6 +6,10 @@ Run the Worker with a valid server-side Kimi configuration, then execute:
 pnpm qa:phase4 > tests/phase4/latest-results.json
 ```
 
+The runner waits 21 seconds between cases by default to stay within the
+baseline account's request-rate limit. Set `PHASE4_CASE_DELAY_MS` when a
+different verified provider limit applies.
+
 The 15 cases cover five Part 1, five Part 2 and five Part 3 inputs, including short, fragmented, repetitive, colloquial, poorly organised, incomplete, personal, abstract and ambiguous material.
 
 An HTTP 200 is not a quality pass. Review every generated `structuredChinese` value for:
