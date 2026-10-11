@@ -48,4 +48,57 @@ describe("EnglishGenerationService", () => {
       }),
     ).rejects.toBeInstanceOf(EnglishGenerationError);
   });
+
+  it("calibrates information-rich Part 2 for normal-speed sustained speech", async () => {
+    const generateText = vi.fn<TextGenerationProvider["generateText"]>();
+    generateText.mockResolvedValue({
+      text: JSON.stringify({ spokenEnglish: "A sustained natural response." }),
+    });
+    const service = new EnglishGenerationService({ generateText });
+
+    await expect(
+      service.generateEnglish({
+        structuredChinese:
+          "这是一段信息丰富、包含细节、感受和反思的第二部分素材。".repeat(30),
+        part: 2,
+        targetBand: 7,
+      }),
+    ).resolves.toEqual({
+      spokenEnglish: "A sustained natural response.",
+    });
+
+    const request = generateText.mock.calls[0][0];
+    expect(request.systemPrompt).toContain("approved normal speech speed");
+    expect(request.systemPrompt).toContain(
+      "Normally produce 350–390 English words",
+    );
+    expect(request.systemPrompt).toContain("required calibration range");
+    expect(request.systemPrompt).toContain("Do not add biography");
+    expect(request.systemPrompt).toContain("Do not pad with repetition");
+    expect(request.userPrompt).toContain("Produce 350–390 English words");
+    expect(request.userPrompt).toContain("Do not summarize it");
+    expect(request.userPrompt).toContain("Do not add plausible micro-details");
+    expect(request.outputSchema?.name).toBe("spoken_english");
+  });
+
+  it("keeps a short edited Part 2 source faithful instead of padding it", async () => {
+    const generateText = vi.fn<TextGenerationProvider["generateText"]>();
+    generateText.mockResolvedValue({
+      text: JSON.stringify({ spokenEnglish: "A short faithful response." }),
+    });
+    const service = new EnglishGenerationService({ generateText });
+
+    await expect(
+      service.generateEnglish({
+        structuredChinese: "用户删减后的简短第二部分内容。",
+        part: 2,
+        targetBand: 7,
+      }),
+    ).resolves.toEqual({ spokenEnglish: "A short faithful response." });
+
+    const request = generateText.mock.calls[0][0];
+    expect(request.systemPrompt).toContain("not information-rich enough");
+    expect(request.userPrompt).not.toContain("Produce 350–390 English words");
+    expect(request.outputSchema?.name).toBe("spoken_english");
+  });
 });

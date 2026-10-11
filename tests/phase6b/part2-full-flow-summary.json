@@ -1,0 +1,43 @@
+{
+  "evaluatedAt": "2026-10-12T02:54:43+08:00",
+  "textModel": "kimi-k2.6",
+  "speechModel": "speech-2.8-turbo",
+  "configuredSpeed": 1,
+  "targetDurationSeconds": 115,
+  "results": [
+    {
+      "id": "p2-old-camera-band7",
+      "structuredChineseCharacters": 492,
+      "wordCount": 402,
+      "audioDurationMs": 111492,
+      "usageCharacters": 2161,
+      "audioBytes": 1785588,
+      "audioReference": "normal-speed-full-flow-p2-old-camera-band7-australian-male.mp3",
+      "browserPlayback": {
+        "status": "playing",
+        "durationSeconds": 111.492,
+        "readyState": 4
+      },
+      "assessment": "Core meaning preserved. Controlled Chinese enrichment added several low-risk details that require human review. Duration is 3.508 seconds below the 1:55 calibration centre."
+    },
+    {
+      "id": "p2-cooking-skill-band8",
+      "structuredChineseCharacters": 493,
+      "wordCount": 385,
+      "audioDurationMs": 119628,
+      "usageCharacters": 2166,
+      "audioBytes": 1915764,
+      "audioReference": "normal-speed-full-flow-p2-cooking-skill-band8-australian-male.mp3",
+      "browserPlayback": {
+        "status": "playing",
+        "durationSeconds": 119.628,
+        "readyState": 4
+      },
+      "assessment": "Core meaning preserved. Controlled Chinese enrichment added several low-risk details that require human review. Duration is 4.628 seconds above the 1:55 calibration centre."
+    }
+  ],
+  "averageStructuredChineseCharacters": 492.5,
+  "averageWordCount": 393.5,
+  "averageAudioDurationMs": 115560,
+  "averageDifferenceFromTargetMs": 560
+}

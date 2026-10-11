@@ -1,0 +1,31 @@
+{
+  "evaluatedAt": "2026-10-11T18:54:43.507Z",
+  "textModel": "kimi-k2.6",
+  "speechModel": "speech-2.8-turbo",
+  "configuredSpeed": 1,
+  "minimumChineseCharacters": 330,
+  "minimumEnglishWords": 330,
+  "outputDirectory": "C:\\Users\\A\\AppData\\Local\\Temp\\accentforge-phase6b-audio",
+  "results": [
+    {
+      "id": "p2-cooking-skill-band8",
+      "part": 2,
+      "targetBand": 8,
+      "structuredChinese": "我想分享的一项实用技能是做饭，尤其是做一碗简单但味道不错的面。以前我几乎不会做饭，忙的时候经常随便点外卖，虽然方便，但吃久了总觉得油腻，而且选择很被动，想吃得清淡一点也没办法。后来有一个假期，我跟家里人学了最基本的步骤，比如怎么调汤底、什么时候放蔬菜，以及怎样让面条保持合适的口感。刚开始我总是手忙脚乱，有时汤太咸，有时面又煮得太软，甚至有一次把鸡蛋煎得焦黑，只能全部倒掉重做。但练了几次以后，我慢慢找到了自己的节奏，也开始理解为什么某个步骤要这么做，而不是死记顺序。现在如果学习或工作了一整天，我会给自己做一碗面，加上鸡蛋和冰箱里现有的蔬菜。整个过程可能只有二十分钟，却会让我从紧张的状态里安静下来——切菜的时候注意力会自然集中，看着汤慢慢热起来，反而成了一种难得的过渡。这项技能对我有用，不只是因为能省一点钱，也因为我可以根据自己的口味调整，比如今天想辣一点就多放点胡椒，没什么胃口就做得清淡些，而且偶尔还能做给朋友吃，看到他们吃得满意的样子，比自己吃还开心。它并不是什么了不起的本领，但确实让我的日常生活更独立、更舒服，也让我意识到，有些看似琐碎的小事，反而最能支撑一个人的状态。",
+      "sourceChinese": "我想说的一项实用技能是做饭，尤其是做一碗简单但味道不错的面。以前我几乎不会做饭，忙的时候经常随便点外卖。后来有一个假期，我跟家里人学了最基本的步骤，比如怎么调汤底、什么时候放蔬菜，以及怎样让面条保持合适的口感。刚开始我总是手忙脚乱，有时汤太咸，有时面又煮得太软，但练了几次以后，我慢慢找到了自己的节奏。现在如果学习或工作了一整天，我会给自己做一碗面，加上鸡蛋和冰箱里现有的蔬菜。整个过程可能只有二十分钟，却会让我从紧张的状态里安静下来。这项技能对我有用，不只是因为能省一点钱，也因为我可以根据自己的口味调整，而且偶尔还能做给朋友吃。它并不是什么了不起的本领，但确实让我的日常生活更独立、更舒服。",
+      "polishStatus": 200,
+      "polishDurationMs": 3836,
+      "structuredChineseCharacters": 493,
+      "generationStatus": 200,
+      "generationDurationMs": 5199,
+      "spokenEnglish": "I'd like to talk about a practical skill I've picked up, which is cooking, specifically making a simple but decent bowl of noodles. Before this, I could barely cook at all. When things got busy, I'd just order takeout without much thought. It was convenient, sure, but after a while it started to feel greasy and heavy, and the real problem was how passive the whole experience was. If I wanted something lighter or cleaner-tasting, I simply didn't have that option. Then during one holiday, I learned the basics from my family, things like how to prepare the broth, when to add the vegetables, and how to get the noodles to that right texture where they're cooked through but still have a bit of bite to them. At first I was all over the place. The soup would come out too salty one time, the noodles would turn mushy the next, and I remember once burning an egg so badly it was completely black, just had to throw the whole thing out and start again. But after a few attempts, I started finding my own rhythm, and more importantly, I began to understand why certain steps matter rather than just memorising the sequence mechanically. These days, after a long day of studying or working, I'll make myself a bowl with an egg and whatever vegetables I've got in the fridge. The whole thing takes maybe twenty minutes, but what it does for my state of mind is what really counts. Chopping vegetables pulls my attention in naturally, and watching the broth slowly come up to temperature becomes this unexpected transition out of tension and stress. The skill matters to me for more than just saving a bit of money. I can adjust things to whatever I'm in the mood for, more pepper if I want heat, keeping it plain when my appetite's not really there. And every so often I'll cook for friends, which adds another layer entirely, seeing them enjoy it genuinely feels better than eating it myself. It's not some impressive talent by any means, but it's made my day-to-day life more self-sufficient and more comfortable in a way I hadn't expected. What it's really taught me is that these seemingly trivial, routine things can actually be what keeps you grounded and steady.",
+      "wordCount": 385,
+      "speechStatus": 200,
+      "audioDurationMs": 119628,
+      "usageCharacters": 2166,
+      "audioBytes": 1915764,
+      "audioReference": "normal-speed-full-flow-p2-cooking-skill-band8-australian-male.mp3",
+      "error": null
+    }
+  ]
+}

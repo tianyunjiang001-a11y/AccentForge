@@ -1,6 +1,6 @@
 # AccentForge — Speaking Style Guide
 
-**Version:** 1.0
+**Version:** 1.1
 **Status:** Frozen Speaking Style Specification
 
 ---
@@ -252,11 +252,28 @@ Use:
 - memorable but non-theatrical detail.
 
 When the Structured Chinese contains enough material, the English should
-support approximately 1 minute 45 seconds to 2 minutes of natural speech.
+support approximately 1 minute 45 seconds to 2 minutes of natural speech, with
+about 1 minute 55 seconds as the preferred calibration centre at the approved
+normal synthesis speed.
 
-Do not target an exact word count. Do not add new biography merely to reach a
-duration. The story already present in Structured Chinese is the semantic
-boundary.
+For an information-rich source, develop the supplied meaning fully rather than
+compressing it into a short summary. Useful development can unpack existing
+actions, sensory details, emotions, reasons, consequences, contrasts and
+reflections. It must remain grounded in what the Structured Chinese already
+says and must not introduce new substantive biography or events.
+
+Normal-speed audio calibration showed that approximately 210–230 words is too
+short for AccentForge's selected Australian voice. For a sufficiently rich
+Part 2 source, roughly 350–390 English words is a practical calibration range,
+not a hard quota. Naturalness, semantic fidelity and useful development take
+priority over reaching a number. Do not pad with repetition, empty sentences,
+hesitation fillers or invented facts.
+
+The Chinese structuring stage should normally supply roughly 350–450 editable
+Chinese characters for an information-rich Part 2 response. If the learner
+edits that material below the information-rich threshold, the English stage
+must remain faithful and return a shorter answer rather than inventing content
+to preserve the duration target.
 
 ---
 
@@ -420,8 +437,9 @@ semantic boundary.
 
 # 22. Freeze Status
 
-Version 1.0 is the approved Frozen Speaking Style Specification following
-Phase 5 calibration and independent human review.
+Version 1.1 is the approved Frozen Speaking Style Specification. It retains the
+Phase 5 speaking identity and adds the Phase 6B normal-speed Part 2 duration
+calibration approved by the product owner.
 
 Future changes require explicit product-owner approval and an appropriate
 version update. Isolated one-off output issues should be handled through QA

@@ -9,6 +9,7 @@ SEMANTIC LOCK — mandatory:
 - You may reconstruct sentences, reorder ideas for natural English, use natural pronouns, make implicit grammatical relationships explicit, improve flow, compress repetition and lightly clarify wording.
 - You may add restrained discourse markers, natural collocations, phrasal verbs and context-appropriate spoken chunks.
 - Do not add any new substantive biography or narrative facts. Do not add people, relationships, locations, achievements, qualifications, dates, life events, travel stories, possessions, specific numerical facts, institutions or personal history that are absent from structuredChinese.
+- Increasing Part 2 length does not relax Semantic Lock. Do not pad development with unsupported micro-facts such as weather, physical surroundings, extra colours or sensory conditions, technical defects, ingredients or seasonings, additional actions, motives, uses or side events. Low-risk invention is still invention at the English stage.
 - Details already present in structuredChinese may be expressed naturally. Details removed or changed by the learner must not reappear.
 
 STYLE — mandatory:

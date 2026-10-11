@@ -6,7 +6,7 @@
 
 **Initial audition speed:** `1.0`
 
-**Current Part 2 calibration candidate:** `0.52`
+**Approved synthesis speed:** `1.0`
 
 **Status:** Refinement candidates ready; Phase 6 is not frozen
 
@@ -172,38 +172,69 @@ Generated English:
 
 ## Part 2 duration refinement
 
-The original English was reused unchanged, so this refinement made no Kimi
-request and introduced no filler or new biography. Four short, controlled
-MiniMax requests compared speeds `0.52` and `0.53` with the approved Australian
-Male voice.
+### Rejected speed experiment
 
-| Speed | Camera duration | Cooking duration |  Average | Assessment                    |
-| ----: | --------------: | ---------------: | -------: | ----------------------------- |
-|  0.52 |        1:52.392 |         2:02.760 | 1:57.576 | Current provisional candidate |
-|  0.53 |        1:43.140 |         1:56.820 | 1:49.980 | Comparison only               |
+Speeds `0.52` and `0.53` were tested against the unchanged baseline English.
+Although the durations became longer, the product owner rejected `0.52` as
+unnatural, deliberate, slow and aesthetically unsuitable. The active MiniMax
+speed was restored to the Phase 6A-approved `1.0`. Slow synthesis is not the
+Part 2 duration strategy.
 
-All four MP3s reached browser media `readyState = 4` and playback started
-successfully. The unexpectedly large difference between two generations only
-`0.01` apart shows that MiniMax duration also varies with generated prosody and
-is not a deterministic inverse function of the configured speed. A single
-global speed therefore cannot guarantee exactly 1:55 for every Part 2 answer.
+### Normal-speed content strategy
 
-Speed `0.52` is retained as the provisional calibration because its two-case
-average is closest to the requested 1:55 target and both cases remain within
-approximately eight seconds of it. This needs human listening approval for
-naturalness before Phase 6 can be frozen. The English prompts and content were
-not changed merely to manufacture duration.
+The accepted architecture keeps responsibilities separated:
 
-The local comparison files are:
+1. Phase 4 develops an information-rich, editable Structured Chinese Part 2
+   answer, normally aiming for roughly 350–450 Chinese characters.
+2. Phase 5 uses the latest edited Structured Chinese as its Semantic Lock and,
+   when the material remains information-rich, develops a natural 350–390-word
+   long turn without adding new English-stage facts.
+3. MiniMax synthesizes the result at normal speed `1.0`.
+4. If the learner edits Structured Chinese down below the information-rich
+   threshold, English remains faithful and shorter rather than inventing
+   content to preserve duration.
 
-- `speed-0.52-p2-old-camera-band7-australian-male.mp3`
-- `speed-0.52-p2-cooking-skill-band8-australian-male.mp3`
-- `speed-0.53-p2-old-camera-band7-australian-male.mp3`
-- `speed-0.53-p2-cooking-skill-band8-australian-male.mp3`
+Several controlled iterations were rejected before settling on this range:
+
+- 210–280-word answers remained roughly 1:00–1:20;
+- forced English-only expansion could hit 1:55 but introduced unsupported
+  micro-details;
+- an over-rich 507-word full-flow answer reached 2:34 and was too long;
+- synthesis was gated during QA when generated English was below 330 words, so
+  known-short outputs did not trigger unnecessary MiniMax requests.
+
+### Final normal-speed full-flow cases
+
+Both final cases ran through real `/api/polish` → `/api/generate` →
+`/api/speech` using Kimi K2.6, Australian Male and MiniMax speed `1.0`.
+
+| Case                  | Structured Chinese |         English | Audio duration | Difference from 1:55 | Browser               |
+| --------------------- | -----------------: | --------------: | -------------: | -------------------: | --------------------- |
+| Old camera, Band 7    |          492 chars |       402 words |       1:51.492 |             −3.508 s | Playing, readyState 4 |
+| Cooking skill, Band 8 |          493 chars |       385 words |       1:59.628 |             +4.628 s | Playing, readyState 4 |
+| **Average**           |    **492.5 chars** | **393.5 words** |   **1:55.560** |         **+0.560 s** | —                     |
+
+The duration target is met on average without slowing speech, adding hesitation
+fillers or altering MiniMax's approved delivery settings. Exact duration remains
+content-dependent and should be treated as a natural range rather than a hard
+timer.
+
+Core meaning was preserved in both cases. Phase 4 Controlled Narrative
+Enrichment added several low-risk editable details. Camera additions included
+the father noticing the learner's interest, a quiet beach and an approximate
+sunrise duration. Cooking additions included a burnt egg, the calming effect of
+preparation and simple taste adjustments. These are not English-stage
+inventions, but their quantity still requires human review under the known
+Phase 4 over-specificity limitation.
+
+Final local-only audition files:
+
+- `normal-speed-full-flow-p2-old-camera-band7-australian-male.mp3`
+- `normal-speed-full-flow-p2-cooking-skill-band8-australian-male.mp3`
 
 ## Playback and state QA
 
-- All six generated MP3 files loaded in Chrome with media `readyState = 4` and
+- All final full-flow MP3 files loaded in Chrome with media `readyState = 4` and
   `HTMLAudioElement.play()` resolving successfully.
 - Selecting Accent or Voice does not synthesize; only Read Aloud calls
   `/api/speech`.
@@ -219,12 +250,14 @@ The local comparison files are:
 ## Request and usage summary
 
 - Voice-list API queries: 2, successful, no synthesis.
-- Real MiniMax TTS requests: 10, all successful, no retries.
-- Real Kimi English-generation requests: 2, both successful.
+- Real MiniMax TTS requests: 19, all successful, no provider retries.
+- Real Kimi requests: 2 initial Part 2 requests plus 14 controlled refinement
+  requests; all provider requests succeeded.
 - Audition usage: 760 characters.
 - Initial Part 2 usage: 2,312 characters.
 - Speed-comparison usage: 4,624 characters.
-- Total MiniMax usage reported: 7,696 characters.
+- Normal-speed refinement usage: 18,948 characters.
+- Total MiniMax usage reported: 26,644 characters.
 - Generated audio is local-only and ignored by Git.
 
 ## Known limitations and human review
@@ -237,12 +270,16 @@ The local comparison files are:
    system-voice list, so no substitute was guessed.
 3. British Female is much slower than Australian Male on the same text;
    naturalness and consistency require human listening.
-4. Speed `0.52` brings these two information-rich Part 2 cases close to the
-   requested 1:55 target on average, but exact duration varies by content and
-   generation and the slower delivery still needs listening approval.
-5. Only Australian Male has human listening approval. API success for the other
+4. Normal-speed Part 2 duration now averages 1:55.560 across two cases, but
+   Controlled Narrative Enrichment added several low-risk details that require
+   human review for quantity and plausibility.
+5. Kimi treats the Chinese-character and English-word ranges as guidance rather
+   than exact limits: the final cases reached 492–493 Chinese characters and
+   one reached 402 English words, while their audio still remained within the
+   accepted natural duration window.
+6. Only Australian Male has human listening approval. API success for the other
    candidates is not approval.
 
-Phase 6B should not be frozen until the remaining voice samples and speed `0.52`
-Part 2 samples are reviewed, and the five missing regional/gender profiles
-receive product-owner direction.
+Phase 6B should not be frozen until the remaining voice samples and the two
+normal-speed Part 2 samples are reviewed, and the five missing regional/gender
+profiles receive product-owner direction.

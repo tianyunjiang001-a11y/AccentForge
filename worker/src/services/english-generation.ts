@@ -20,25 +20,27 @@ export class EnglishGenerationService implements EnglishGenerator {
     const result = await this.textProvider.generateText({
       ...prompt,
       maxOutputTokens: 2048,
-      outputSchema: {
-        name: "spoken_english",
-        schema: {
-          type: "object",
-          properties: {
-            spokenEnglish: {
-              type: "string",
-              description: "The complete natural IELTS spoken-English answer",
-            },
-          },
-          required: ["spokenEnglish"],
-          additionalProperties: false,
-        },
-      },
+      outputSchema: spokenEnglishOutputSchema,
     });
 
     return parseSpokenEnglish(result.text);
   }
 }
+
+const spokenEnglishOutputSchema = {
+  name: "spoken_english",
+  schema: {
+    type: "object",
+    properties: {
+      spokenEnglish: {
+        type: "string",
+        description: "The complete natural IELTS spoken-English answer",
+      },
+    },
+    required: ["spokenEnglish"],
+    additionalProperties: false,
+  },
+};
 
 function parseSpokenEnglish(value: string): SpokenEnglishResult {
   let parsed: unknown;

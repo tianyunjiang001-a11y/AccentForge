@@ -16,7 +16,9 @@
     "qa:phase4:enrichment": "node tests/phase4/run-evaluation.mjs ./part2-enrichment-cases.json",
     "qa:phase5": "node tests/phase5/run-evaluation.mjs",
     "qa:phase6b": "node tests/phase6b/run-calibration.mjs",
-    "qa:phase6b:speed": "node tests/phase6b/run-speed-calibration.mjs"
+    "qa:phase6b:speed": "node tests/phase6b/run-speed-calibration.mjs",
+    "qa:phase6b:part2-normal": "node tests/phase6b/run-normal-speed-part2-validation.mjs",
+    "qa:phase6b:part2-full": "node tests/phase6b/run-part2-full-flow-validation.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",

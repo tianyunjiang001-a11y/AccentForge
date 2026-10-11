@@ -1,6 +1,6 @@
 # AccentForge — IELTS Agent Rules
 
-**Version:** 1.1
+**Version:** 1.2
 **Status:** Frozen Agent Specification
 
 ---
@@ -306,7 +306,14 @@ Generate enough content to support roughly:
 
 at a natural learner-friendly speaking pace.
 
-Do not force an exact word count.
+At the approved normal speech-synthesis speed, previous Structured Chinese of
+roughly 280–350 Chinese characters produced English audio that was materially
+too short. For an information-rich Part 2 answer, roughly 350–450 Chinese
+characters is therefore a practical calibration range, not a hard quota.
+
+Reach this depth through one coherent, editable narrative thread. Do not use
+repetition, empty commentary or a pile of unrelated invented events merely to
+reach a length.
 
 ### Controlled Elaboration
 
