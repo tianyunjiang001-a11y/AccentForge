@@ -1,7 +1,7 @@
 # AccentForge — Speaking Style Guide
 
 **Version:** 1.0
-**Status:** Frozen Candidate — Phase 5 Calibration
+**Status:** Frozen Speaking Style Specification
 
 ---
 
@@ -418,13 +418,11 @@ semantic boundary.
 
 ---
 
-# 22. Calibration Status
+# 22. Freeze Status
 
-This version is a Frozen Candidate for Phase 5 calibration.
+Version 1.0 is the approved Frozen Speaking Style Specification following
+Phase 5 calibration and independent human review.
 
-Only recurring problems demonstrated by real Kimi outputs should cause a style
-rule adjustment. Isolated one-off phrasing should be recorded without causing
-endless rule growth.
-
-Promotion to **Frozen Speaking Style Specification** requires explicit human
-approval after Phase 5 evaluation.
+Future changes require explicit product-owner approval and an appropriate
+version update. Isolated one-off output issues should be handled through QA
+rather than silently changing the frozen speaking identity.

@@ -1,6 +1,6 @@
 # AccentForge — Codex Build Brief
 
-**Version:** 1.2
+**Version:** 1.3
 **Status:** Frozen Build Specification  
 **Project:** AccentForge  
 **Implementation Mode:** Sequential, test-first, mock-first  
@@ -1297,6 +1297,22 @@ Evaluate:
 - voice distinction;
 - shadowing suitability.
 
+## Information-Rich Part 2 End-to-End Acceptance
+
+Before Phase 6 can be accepted, test two to three information-rich Part 2
+Structured Chinese inputs through the complete real English-and-audio workflow.
+
+Evaluate:
+
+- whether the English and audio produce a natural speaking duration for the
+  amount of source material;
+- fidelity to the latest Structured Chinese;
+- natural pacing and continuity in the synthesized delivery;
+- absence of invented filler content added merely to extend the recording.
+
+Do not add biography, repetition, hesitation fillers or empty sentences to hit
+an artificial duration target.
+
 ---
 
 ## Suggested Commits
@@ -1651,6 +1667,19 @@ The Phase 5 English stage must treat the latest learner-edited Structured
 Chinese as its semantic boundary. Verify that details deleted or changed by the
 learner do not reappear and that English generation does not compound Phase 4
 enrichment with new substantive biography.
+
+## Phase 5 Frozen-Baseline Regressions
+
+Retain explicit regression coverage for the known Phase 5 limitations:
+
+- Band 7 and Band 9 differentiation can be subtle on simple inputs;
+- occasional low-risk descriptive or reflective expansion can occur;
+- occasional unnatural English collocations can occur.
+
+These are regression targets, not approved style goals. Evaluate whether they
+become more frequent or severe during end-to-end changes, including speech
+integration, without weakening Semantic Lock or rewriting the frozen speaking
+style around isolated outputs.
 
 ## Idiomaticity
 
