@@ -1,5 +1,5 @@
 {
-  "evaluatedAt": "2026-10-11T18:03:15.804Z",
+  "evaluatedAt": "2026-10-12T03:06:12.2506222+08:00",
   "model": "speech-2.8-turbo",
   "auditionText": "Well, I'd say the best part is that it fits naturally into my routine. It isn't complicated, but it helps me slow down, pay attention, and enjoy what I'm doing instead of rushing through it.",
   "outputDirectory": "C:\\Users\\A\\AppData\\Local\\Temp\\accentforge-phase6b-audio",
@@ -23,9 +23,9 @@
     {
       "accent": "american",
       "voice": "female",
-      "voiceId": "English_Whispering_girl",
+      "voiceId": "English_compelling_lady1",
       "status": "candidate",
-      "officialEvidence": "MiniMax voice-list API describes this system voice as a young female whispering voice with a General American accent. IELTS suitability requires human listening."
+      "officialEvidence": "English_Whispering_girl was rejected by human review because it is too quiet and thin. MiniMax's official American-accent page exposes English_compelling_lady1 as its female example. Although it is absent from the current account get_voice response, a direct Speech 2.8 Turbo request succeeded; listening approval remains pending."
     },
     {
       "accent": "american",
@@ -81,14 +81,14 @@
     {
       "accent": "american",
       "voice": "female",
-      "voiceId": "English_Whispering_girl",
+      "voiceId": "English_compelling_lady1",
       "previousStatus": "candidate",
       "status": 200,
       "contentType": "audio/mpeg",
-      "audioDurationMs": 15876,
+      "audioDurationMs": 12420,
       "usageCharacters": 190,
-      "audioBytes": 255732,
-      "audioReference": "audition-american-female.mp3",
+      "audioBytes": 200436,
+      "audioReference": "audition-american-female-compelling-lady1-worker.mp3",
       "error": null,
       "listeningApproval": "pending human review"
     },

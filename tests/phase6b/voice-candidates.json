@@ -16,9 +16,9 @@
   {
     "accent": "american",
     "voice": "female",
-    "voiceId": null,
-    "status": "rejected-unresolved",
-    "officialEvidence": "English_Whispering_girl was rejected by human review because it is too quiet and thin. MiniMax describes it as a whispering General American ASMR voice. The official American voice page exposes English_compelling_lady1, but that ID is not available in the current China Mainland account voice-list response."
+    "voiceId": "English_compelling_lady1",
+    "status": "candidate",
+    "officialEvidence": "English_Whispering_girl was rejected by human review because it is too quiet and thin. MiniMax's official American-accent page exposes English_compelling_lady1 as its female example. Although it is absent from the current account get_voice response, a direct Speech 2.8 Turbo request succeeded; listening approval remains pending."
   },
   {
     "accent": "american",

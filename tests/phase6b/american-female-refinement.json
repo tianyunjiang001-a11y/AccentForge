@@ -1,0 +1,37 @@
+{
+  "evaluatedAt": "2026-10-12T03:06:12.2506222+08:00",
+  "model": "speech-2.8-turbo",
+  "speed": 1,
+  "sampleCharacters": 190,
+  "accountSystemVoiceCount": 303,
+  "accountListedAmericanFemaleVoices": [
+    {
+      "voiceId": "English_Whispering_girl",
+      "status": "rejected-by-human-review",
+      "reason": "Too quiet and too thin for AccentForge."
+    }
+  ],
+  "candidate": {
+    "accent": "american",
+    "voice": "female",
+    "voiceId": "English_compelling_lady1",
+    "officialEvidence": "MiniMax's official American-accent page exposes this Voice ID as its female example.",
+    "accountVoiceListStatus": "not-listed",
+    "directProviderTest": {
+      "status": 200,
+      "providerDurationMs": 13284,
+      "usageCharacters": 190,
+      "audioBytes": 214260,
+      "audioReference": "audition-american-female-compelling-lady1.mp3"
+    },
+    "workerRouteTest": {
+      "status": 200,
+      "contentType": "audio/mpeg",
+      "providerDurationMs": 12420,
+      "usageCharacters": 190,
+      "audioBytes": 200436,
+      "audioReference": "audition-american-female-compelling-lady1-worker.mp3"
+    },
+    "listeningApproval": "pending human review"
+  }
+}
