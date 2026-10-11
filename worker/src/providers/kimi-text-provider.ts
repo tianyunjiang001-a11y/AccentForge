@@ -7,10 +7,14 @@ import type {
 } from "./text-provider";
 
 export class KimiTextProvider implements TextGenerationProvider {
+  private readonly fetcher: typeof fetch;
+
   constructor(
     private readonly config: KimiProviderConfig,
-    private readonly fetcher: typeof fetch = fetch,
-  ) {}
+    fetcher?: typeof fetch,
+  ) {
+    this.fetcher = fetcher ?? ((input, init) => globalThis.fetch(input, init));
+  }
 
   async generateText(
     request: TextGenerationRequest,

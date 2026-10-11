@@ -25,6 +25,47 @@ const generationRequest = {
 };
 
 describe("KimiTextProvider", () => {
+  it("preserves the Worker global context for the default fetch", async () => {
+    const fetcher = vi
+      .fn(function (this: unknown) {
+        if (this !== globalThis) {
+          throw new TypeError("Illegal invocation");
+        }
+
+        return Promise.resolve(
+          new Response(
+            JSON.stringify({
+              choices: [
+                {
+                  finish_reason: "stop",
+                  message: {
+                    content: JSON.stringify({
+                      structuredChinese: "整理后的中文",
+                    }),
+                  },
+                },
+              ],
+            }),
+            { status: 200 },
+          ),
+        );
+      })
+      .mockName("workerFetch");
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = fetcher as typeof fetch;
+
+    try {
+      const provider = new KimiTextProvider(config);
+
+      await expect(provider.generateText(generationRequest)).resolves.toEqual({
+        text: JSON.stringify({ structuredChinese: "整理后的中文" }),
+      });
+      expect(fetcher).toHaveBeenCalledOnce();
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+
   it("uses the documented Kimi Chat Completions pattern", async () => {
     const fetcher = vi.fn<typeof fetch>().mockResolvedValue(
       new Response(
