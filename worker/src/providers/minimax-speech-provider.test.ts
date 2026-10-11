@@ -12,13 +12,12 @@ const config = {
 };
 
 const voiceProfiles: VoiceProfileMap = {
-  british: { female: "English_Graceful_Lady", male: "" },
+  british: { female: "English_Graceful_Lady" },
   american: {
-    female: "",
+    female: "English_compelling_lady1",
     male: "English_Trustworthy_Man",
   },
-  australian: { female: "", male: "English_Aussie_Bloke" },
-  canadian: { female: "", male: "" },
+  australian: { male: "English_Aussie_Bloke" },
 };
 
 const request = {
@@ -106,6 +105,7 @@ describe("MiniMaxSpeechProvider", () => {
 
   it.each([
     ["british", "female", "English_Graceful_Lady"],
+    ["american", "female", "English_compelling_lady1"],
     ["american", "male", "English_Trustworthy_Man"],
     ["australian", "male", "English_Aussie_Bloke"],
   ] as const)(
@@ -154,8 +154,8 @@ describe("MiniMaxSpeechProvider", () => {
     await expect(
       provider.synthesizeSpeech({
         text: request.text,
-        accent: "canadian",
-        voice: "female",
+        accent: "british",
+        voice: "male",
       }),
     ).rejects.toEqual(expect.objectContaining({ code: "not-configured" }));
     expect(fetcher).not.toHaveBeenCalled();

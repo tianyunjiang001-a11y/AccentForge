@@ -1,6 +1,6 @@
 # AccentForge — IELTS Agent Rules
 
-**Version:** 1.2
+**Version:** 1.3
 **Status:** Frozen Agent Specification
 
 ---
@@ -773,17 +773,16 @@ Speech generation receives:
 - `accent`
 - `voice`
 
-Allowed accents:
+Approved V1 voice profiles:
 
-- British
-- American
-- Australian
-- Canadian
+- British Female
+- American Female
+- American Male
+- Australian Male
 
-Allowed voice presentations:
-
-- Female
-- Male
+The product may expand this list after user testing and a formal specification
+revision. An unavailable voice presentation must not be substituted with a
+different regional accent.
 
 ---
 

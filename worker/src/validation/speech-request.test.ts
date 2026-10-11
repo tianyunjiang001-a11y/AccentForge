@@ -73,6 +73,9 @@ describe("parseSpeechRequest", () => {
     { accent: "australian", voice: "Male" },
     { accent: "irish", voice: "male" },
     { accent: "australian", voice: "neutral" },
+    { accent: "british", voice: "male" },
+    { accent: "australian", voice: "female" },
+    { accent: "canadian", voice: "female" },
   ])("rejects unsupported selections", async ({ accent, voice }) => {
     await expect(
       parseSpeechRequest(

@@ -1,6 +1,6 @@
 # AccentForge — Design System
 
-**Version:** 1.0  
+**Version:** 1.1
 **Status:** Frozen Visual Direction  
 **Design Direction:** Apple-inspired, minimal, premium, calm
 
@@ -631,10 +631,10 @@ Structure:
 
 ```text
 Accent
-[ British ] [ American ] [ Australian ] [ Canadian ]
+[ British ] [ American ] [ Australian ]
 
 Voice
-[ Female ] [ Male ]
+[ approved option(s) for the selected Accent ]
 
 [ ▶ Read Aloud ]
 ```
@@ -642,6 +642,19 @@ Voice
 Keep this section visually quieter than the two main editors.
 
 The text transformation remains the core experience.
+
+For the reduced V1 voice set, the linked controls expose exactly these
+profiles:
+
+- British Female;
+- American Female;
+- American Male;
+- Australian Male.
+
+Do not show disabled or unavailable regional/gender combinations. When Accent
+changes, preserve the current Voice only if that combination is approved;
+otherwise clear the Voice selection. This availability behaviour must not add
+new colours, explanatory badges or visual clutter.
 
 ---
 

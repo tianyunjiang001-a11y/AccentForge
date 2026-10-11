@@ -1,6 +1,6 @@
 # AccentForge — Codex Build Brief
 
-**Version:** 1.3
+**Version:** 1.4
 **Status:** Frozen Build Specification  
 **Project:** AccentForge  
 **Implementation Mode:** Sequential, test-first, mock-first  
@@ -332,13 +332,9 @@ MINIMAX_BASE_URL=
 MINIMAX_TTS_MODEL=speech-2.8-turbo
 
 MINIMAX_BRITISH_FEMALE_VOICE_ID=
-MINIMAX_BRITISH_MALE_VOICE_ID=
 MINIMAX_AMERICAN_FEMALE_VOICE_ID=
 MINIMAX_AMERICAN_MALE_VOICE_ID=
-MINIMAX_AUSTRALIAN_FEMALE_VOICE_ID=
 MINIMAX_AUSTRALIAN_MALE_VOICE_ID=
-MINIMAX_CANADIAN_FEMALE_VOICE_ID=
-MINIMAX_CANADIAN_MALE_VOICE_ID=
 ```
 
 `KIMI_BASE_URL` and `MINIMAX_BASE_URL` may remain empty until their implementation phases verify the current official provider documentation.
@@ -535,7 +531,6 @@ Options:
 - British
 - American
 - Australian
-- Canadian
 
 Use a restrained segmented control.
 
@@ -551,6 +546,14 @@ Options:
 - Male
 
 Use the same visual system as the other segmented controls.
+
+Show only the approved presentation or presentations for the selected Accent:
+
+- British → Female;
+- American → Female or Male;
+- Australian → Male.
+
+Unavailable combinations must not be rendered in the V1 interface.
 
 ---
 
@@ -1156,7 +1159,6 @@ Exactly:
 british
 american
 australian
-canadian
 ```
 
 ---
@@ -1229,12 +1231,6 @@ General American pronunciation.
 
 Contemporary General Australian pronunciation.
 
-## Canadian
-
-Contemporary General Canadian pronunciation.
-
----
-
 # 26. Voice Presentation
 
 Use two clearly different synthetic voice presentations:
@@ -1244,7 +1240,15 @@ Use two clearly different synthetic voice presentations:
 
 Do not imply the system is cloning or reproducing any real person.
 
-The eight Accent × Voice combinations are fixed logical product profiles. Map them centrally to environment-configured MiniMax voice IDs. Do not expose voice IDs in the frontend, duplicate them through the source tree or invent their values. The product owner must approve the real voice IDs before Phase 6 implementation.
+The approved V1 logical profiles are British Female, American Female,
+American Male and Australian Male. Map them centrally to environment-configured
+MiniMax voice IDs. Do not expose voice IDs in the frontend, duplicate them
+through the source tree or invent their values. The product owner must approve
+each real voice ID before activation.
+
+British Male, Australian Female, Canadian Female and Canadian Male are deferred
+until post-V1 user feedback and a formal specification revision. Do not display
+or silently substitute these combinations.
 
 Keep the same logical voice profile stable across sessions wherever possible. Do not add user-facing voice cloning or voice-design controls.
 
@@ -1252,7 +1256,7 @@ Keep the same logical voice profile stable across sessions wherever possible. Do
 
 # 27. Voice Efficiency Rules
 
-Never generate all eight Accent × Voice combinations automatically.
+Never generate all four approved V1 profiles automatically.
 
 Only generate audio after:
 
@@ -1272,20 +1276,13 @@ Changing Accent or Voice must not automatically trigger TTS.
 
 # 28. Voice QA Matrix
 
-Test all eight combinations:
+Test all four approved V1 profiles:
 
 ```text
 British Female
-British Male
-
 American Female
 American Male
-
-Australian Female
 Australian Male
-
-Canadian Female
-Canadian Male
 ```
 
 Evaluate:
@@ -1322,7 +1319,7 @@ feat: add MiniMax accent-aware speech generation
 ```
 
 ```text
-test: verify eight voice combinations
+test: verify four approved V1 voice profiles
 ```
 
 ---
@@ -1504,7 +1501,10 @@ using Cloudflare secrets.
 
 Never commit them or log their values.
 
-Configure the Kimi and MiniMax base URLs, model identifiers and eight MiniMax voice IDs in the Worker environment. Do not expose any provider configuration to browser code. Verify official base URLs during the relevant implementation phase instead of guessing them during scaffolding.
+Configure the Kimi and MiniMax base URLs, model identifiers and four approved
+V1 MiniMax voice IDs in the Worker environment. Do not expose any provider
+configuration to browser code. Verify official base URLs during the relevant
+implementation phase instead of guessing them during scaffolding.
 
 ---
 
@@ -1928,7 +1928,7 @@ Describe:
 
 - Kimi Part testing;
 - Kimi Band testing;
-- MiniMax testing of all eight fixed voice profiles;
+- MiniMax testing of all four approved V1 voice profiles;
 - provider reliability and normalised error behaviour;
 - known failure modes;
 - prompt iteration;
@@ -1975,9 +1975,9 @@ Part 1 — Band 5
 Part 2 — Band 7
 Part 3 — Band 9
 British Female
+American Female
 American Male
-Australian Female
-Canadian Male
+Australian Male
 ```
 
 Store appropriate materials in:
@@ -2019,7 +2019,7 @@ test: evaluate target band differentiation
 
 feat: add MiniMax accent-aware speech generation
 
-test: verify eight voice combinations
+test: verify four approved V1 voice profiles
 
 feat: add production security and usage controls
 
@@ -2068,8 +2068,8 @@ AccentForge V1.0.0 may be released only when all of the following are true.
 - Polish My Idea works.
 - polished Chinese remains editable.
 - Generate English works.
-- 4 accents work.
-- 2 voice options work.
+- all four approved V1 voice profiles work;
+- unavailable regional/gender combinations are not shown.
 - Read Aloud works.
 
 ---

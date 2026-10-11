@@ -1,4 +1,4 @@
-export type Accent = "british" | "american" | "australian" | "canadian";
+export type Accent = "british" | "american" | "australian";
 
 export type Voice = "female" | "male";
 

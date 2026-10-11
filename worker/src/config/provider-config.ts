@@ -7,13 +7,9 @@ export interface ProviderEnvironment {
   MINIMAX_TTS_MODEL?: string;
   MINIMAX_TTS_SPEED?: string;
   MINIMAX_BRITISH_FEMALE_VOICE_ID?: string;
-  MINIMAX_BRITISH_MALE_VOICE_ID?: string;
   MINIMAX_AMERICAN_FEMALE_VOICE_ID?: string;
   MINIMAX_AMERICAN_MALE_VOICE_ID?: string;
-  MINIMAX_AUSTRALIAN_FEMALE_VOICE_ID?: string;
   MINIMAX_AUSTRALIAN_MALE_VOICE_ID?: string;
-  MINIMAX_CANADIAN_FEMALE_VOICE_ID?: string;
-  MINIMAX_CANADIAN_MALE_VOICE_ID?: string;
 }
 
 export interface KimiProviderConfig {

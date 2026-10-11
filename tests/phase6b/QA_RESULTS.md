@@ -8,7 +8,7 @@
 
 **Approved synthesis speed:** `1.0`
 
-**Status:** American Female replacement ready for listening; Phase 6 is not frozen
+**Status:** Frozen — reduced four-profile V1
 
 ## Scope
 
@@ -17,9 +17,11 @@ Speaking Style Guide, existing frontend appearance and Phase 6A MiniMax
 transport. It did not start Phase 7, purchase or create voices, or call voice
 cloning or Voice Design.
 
-The eight logical product profiles remain present. Only profiles supported by
-current official evidence were configured. Unresolved profiles are rejected by
-the Worker before a MiniMax synthesis request.
+Following product-owner listening review, V1 was formally reduced to four
+approved profiles: British Female, American Female, American Male and
+Australian Male. British Male, Australian Female, Canadian Female and Canadian
+Male are deferred until post-launch user feedback. Deferred profiles are not
+shown in the frontend and are rejected by the Worker before MiniMax transport.
 
 ## Official sources and discovery
 
@@ -47,24 +49,24 @@ quiet and too thin. The official American-accent examples page exposes
 `English_compelling_lady1` as its female example. That ID is not returned by the
 current China Mainland account's `get_voice` response, but two controlled
 Speech 2.8 Turbo requests succeeded: one direct provider check and one complete
-Worker-route check. It is now configured as the replacement American Female
-candidate, pending human listening approval. No current system Voice ID was
+Worker-route check. Product-owner listening subsequently approved it as the V1
+American Female profile. No current system Voice ID was
 found with adequate regional evidence for British Male, Australian Female,
 Canadian Female or Canadian Male. Generic English voices were not assigned to
 those regions merely because they can speak English.
 
-## Eight-profile matrix
+## Voice-profile decision matrix
 
-| Accent     | Voice  | Voice ID                   | API test        | Listening status               |
-| ---------- | ------ | -------------------------- | --------------- | ------------------------------ |
-| British    | Female | `English_Graceful_Lady`    | 200, MP3        | Pending human review           |
-| British    | Male   | —                          | Not synthesized | Unresolved; safely unsupported |
-| American   | Female | `English_compelling_lady1` | 200, MP3        | Pending human review           |
-| American   | Male   | `English_Trustworthy_Man`  | 200, MP3        | Pending human review           |
-| Australian | Female | —                          | Not synthesized | Unresolved; safely unsupported |
-| Australian | Male   | `English_Aussie_Bloke`     | 200, MP3        | Approved in Phase 6A           |
-| Canadian   | Female | —                          | Not synthesized | Unresolved; safely unsupported |
-| Canadian   | Male   | —                          | Not synthesized | Unresolved; safely unsupported |
+| Accent     | Voice  | Voice ID                   | API test        | Listening status     |
+| ---------- | ------ | -------------------------- | --------------- | -------------------- |
+| British    | Female | `English_Graceful_Lady`    | 200, MP3        | Approved for V1      |
+| British    | Male   | —                          | Not synthesized | Deferred post-V1     |
+| American   | Female | `English_compelling_lady1` | 200, MP3        | Approved for V1      |
+| American   | Male   | `English_Trustworthy_Man`  | 200, MP3        | Approved for V1      |
+| Australian | Female | —                          | Not synthesized | Deferred post-V1     |
+| Australian | Male   | `English_Aussie_Bloke`     | 200, MP3        | Approved in Phase 6A |
+| Canadian   | Female | —                          | Not synthesized | Deferred post-V1     |
+| Canadian   | Male   | —                          | Not synthesized | Deferred post-V1     |
 
 ## Comparable voice auditions
 
@@ -74,19 +76,18 @@ Every configured voice used the same 190-character sample:
 > isn't complicated, but it helps me slow down, pay attention, and enjoy what
 > I'm doing instead of rushing through it.
 
-| Profile                     | Voice ID                   | Provider duration |         Browser duration |     Usage |   Bytes | Result                             |
-| --------------------------- | -------------------------- | ----------------: | -----------------------: | --------: | ------: | ---------------------------------- |
-| British Female              | `English_Graceful_Lady`    |          16.271 s |                 16.208 s | 190 chars | 262,068 | MP3 playable                       |
-| American Female             | `English_Whispering_girl`  |          15.876 s |                 15.824 s | 190 chars | 255,732 | Playable; rejected by owner        |
-| American Female replacement | `English_compelling_lady1` |          12.420 s | Pending in-app listening | 190 chars | 200,436 | MP3 playable; pending owner review |
-| American Male               | `English_Trustworthy_Man`  |          12.420 s |                 12.365 s | 190 chars | 200,436 | MP3 playable                       |
-| Australian Male             | `English_Aussie_Bloke`     |           9.324 s |                  9.253 s | 190 chars | 150,900 | MP3 playable                       |
+| Profile                     | Voice ID                   | Provider duration |         Browser duration |     Usage |   Bytes | Result                      |
+| --------------------------- | -------------------------- | ----------------: | -----------------------: | --------: | ------: | --------------------------- |
+| British Female              | `English_Graceful_Lady`    |          16.271 s |                 16.208 s | 190 chars | 262,068 | Approved for V1             |
+| American Female             | `English_Whispering_girl`  |          15.876 s |                 15.824 s | 190 chars | 255,732 | Playable; rejected by owner |
+| American Female replacement | `English_compelling_lady1` |          12.420 s | Owner listening approved | 190 chars | 200,436 | Approved for V1             |
+| American Male               | `English_Trustworthy_Man`  |          12.420 s |                 12.365 s | 190 chars | 200,436 | Approved for V1             |
+| Australian Male             | `English_Aussie_Bloke`     |           9.324 s |                  9.253 s | 190 chars | 150,900 | Approved for V1             |
 
-The substantial duration difference for identical text is a voice-specific
-pacing observation that requires listening review. API success is not treated
-as voice-quality approval. The whispering American Female row is retained only
-as a historical audition result; its active mapping has been replaced by the
-new candidate.
+The substantial duration difference for identical text is retained as a
+voice-specific pacing observation. All four active profiles have now passed
+product-owner listening review. The whispering American Female row is retained
+only as a historical rejected result; its active mapping was replaced.
 
 The replacement produced 13.284 seconds / 214,260 bytes in the direct provider
 check and 12.420 seconds / 200,436 bytes through the normalized Worker route.
@@ -247,14 +248,14 @@ Final local-only audition files:
 
 - All final full-flow MP3 files loaded in Chrome with media `readyState = 4` and
   `HTMLAudioElement.play()` resolving successfully.
-- The replacement American Female candidate returns `200 audio/mpeg` through
-  `/api/speech`; its local MP3 is ready for product-owner listening.
+- The replacement American Female profile returns `200 audio/mpeg` through
+  `/api/speech` and has product-owner listening approval.
 - Selecting Accent or Voice does not synthesize; only Read Aloud calls
   `/api/speech`.
 - The browser sends the selected logical Accent and Voice; the Worker centrally
   resolves the corresponding environment-configured Voice ID.
-- Four unresolved combinations return normalized HTTP 422 messages and are
-  rejected before provider transport.
+- Deferred combinations are absent from the frontend and rejected by Worker
+  validation before provider transport.
 - Duplicate submissions, stale English protection, audio invalidation and Blob
   URL cleanup remain covered by frontend tests.
 - Provider failures and credentials remain hidden.
@@ -273,17 +274,18 @@ Final local-only audition files:
 - Total MiniMax usage reported: 27,024 characters.
 - Generated audio is local-only and ignored by Git.
 
-## Known limitations and human review
+## Known limitations and post-V1 review
 
-1. British Male, Australian Female, Canadian Female and Canadian Male remain
-   unresolved because current official system-voice evidence does not identify
-   suitable candidates.
-2. The replacement American Female candidate is technically working but still
-   needs product-owner listening approval. It is exposed by MiniMax's official
+1. British Male, Australian Female, Canadian Female and Canadian Male are
+   intentionally deferred from V1 because reliable candidates were not found.
+   They may be reconsidered after real user feedback and a formal specification
+   revision.
+2. The approved American Female profile is exposed by MiniMax's official
    American-accent page and synthesizes successfully, despite being absent from
-   the account's `get_voice` result.
-3. British Female is much slower than Australian Male on the same text;
-   naturalness and consistency require human listening.
+   the account's `get_voice` result. Provider availability should be monitored.
+3. The approved voices have different natural pacing on identical text. This
+   variation is acceptable after product-owner listening review and must not be
+   flattened with unnatural speed manipulation.
 4. Normal-speed Part 2 duration now averages 1:55.560 across two cases, but
    Controlled Narrative Enrichment added several low-risk details that require
    human review for quantity and plausibility.
@@ -294,10 +296,8 @@ Final local-only audition files:
 6. The product owner approved the final Part 2 samples' sound and speed at
    normal speed `1.0`; content-level review of the added Phase 4 details remains
    distinct from that approval.
-7. Only Australian Male has profile-level human listening approval. API success
-   for the other voice candidates is not approval.
+7. British Female, American Female, American Male and Australian Male all have
+   product-owner listening approval.
 
-Phase 6B should not be frozen until the replacement American Female, British
-Female and American Male samples are reviewed, and the four missing
-regional/gender profiles receive product-owner direction. Phase 7 must not
-begin before that Phase 6 decision.
+Phase 6B is frozen for the formally reduced four-profile V1. This closure does
+not begin Phase 7; production-protection work still requires explicit approval.

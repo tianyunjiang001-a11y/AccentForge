@@ -8,13 +8,12 @@ import {
 } from "./speech-synthesis";
 
 const voiceProfiles: VoiceProfileMap = {
-  british: { female: "English_Graceful_Lady", male: "" },
+  british: { female: "English_Graceful_Lady" },
   american: {
-    female: "",
+    female: "English_compelling_lady1",
     male: "English_Trustworthy_Man",
   },
-  australian: { female: "", male: "English_Aussie_Bloke" },
-  canadian: { female: "", male: "" },
+  australian: { male: "English_Aussie_Bloke" },
 };
 
 describe("SpeechSynthesisService", () => {
@@ -47,8 +46,8 @@ describe("SpeechSynthesisService", () => {
     expect(() =>
       service.synthesize({
         text: "Natural English.",
-        accent: "canadian",
-        voice: "female",
+        accent: "british",
+        voice: "male",
       }),
     ).toThrow(UnsupportedVoiceSelectionError);
     expect(synthesizeSpeech).not.toHaveBeenCalled();

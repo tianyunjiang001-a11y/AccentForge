@@ -4,6 +4,11 @@ import { EditorCard } from "./components/EditorCard";
 import { SegmentedControl } from "./components/SegmentedControl";
 import { PRODUCT_LINKS } from "./config/productLinks";
 import {
+  accentOptions,
+  isApprovedVoiceProfile,
+  voiceOptionsFor,
+} from "./config/voiceProfiles";
+import {
   GENERATE_ENGLISH_ERROR_MESSAGE,
   generateEnglish,
 } from "./services/generateEnglish";
@@ -17,14 +22,6 @@ import type { Accent, SpeakingPart, TargetBand, Voice } from "./types";
 
 const partOptions: readonly SpeakingPart[] = ["Part 1", "Part 2", "Part 3"];
 const bandOptions: readonly TargetBand[] = ["5", "6", "7", "8", "9"];
-const accentOptions: readonly Accent[] = [
-  "British",
-  "American",
-  "Australian",
-  "Canadian",
-];
-const voiceOptions: readonly Voice[] = ["Female", "Male"];
-
 interface GenerationContext {
   band: TargetBand;
   part: SpeakingPart;
@@ -98,7 +95,10 @@ function App() {
     !isPolishedStale &&
     !isBusy;
   const canChooseVoice = Boolean(english) && !isEnglishStale && !isBusy;
-  const canReadAloud = canChooseVoice && Boolean(accent && voice);
+  const voiceOptions = voiceOptionsFor(accent);
+  const canReadAloud =
+    canChooseVoice &&
+    Boolean(accent && voice && isApprovedVoiceProfile(accent, voice));
 
   const chineseDescription = useMemo(() => {
     if (polishError) {
@@ -218,6 +218,11 @@ function App() {
 
   function handleAccentChange(nextAccent: Accent) {
     setAccent(nextAccent);
+    setVoice((currentVoice) =>
+      currentVoice && isApprovedVoiceProfile(nextAccent, currentVoice)
+        ? currentVoice
+        : null,
+    );
     setAudioError(null);
     invalidateAudio();
   }
@@ -335,7 +340,7 @@ function App() {
               value={accent}
             />
             <SegmentedControl
-              disabled={!canChooseVoice}
+              disabled={!canChooseVoice || !accent}
               label="Voice"
               onChange={handleVoiceChange}
               options={voiceOptions}

@@ -3,16 +3,12 @@ import type {
   SpeechSynthesisRequest,
   Voice,
 } from "../providers/speech-provider";
+import { isApprovedVoiceProfile } from "../config/voice-profiles";
 import { RequestValidationError } from "./polish-request";
 
 export const MAX_SPEECH_TEXT_CHARACTERS = 9_999;
 
-const accents: readonly Accent[] = [
-  "british",
-  "american",
-  "australian",
-  "canadian",
-];
+const accents: readonly Accent[] = ["british", "american", "australian"];
 const voices: readonly Voice[] = ["female", "male"];
 
 export async function parseSpeechRequest(
@@ -44,7 +40,11 @@ export async function parseSpeechRequest(
     );
   }
 
-  if (!isAccent(accent) || !isVoice(voice)) {
+  if (
+    !isAccent(accent) ||
+    !isVoice(voice) ||
+    !isApprovedVoiceProfile(accent, voice)
+  ) {
     throw invalidSpeechRequest();
   }
 

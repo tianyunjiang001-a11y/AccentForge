@@ -66,7 +66,7 @@ async function buildEnglishAnswer() {
   return user;
 }
 
-describe("AccentForge Phase 6B workflow", () => {
+describe("AccentForge four-profile V1 workflow", () => {
   it("uses real endpoint contracts for polish, English and a configured voice", async () => {
     const user = await buildEnglishAnswer();
 
@@ -118,39 +118,29 @@ describe("AccentForge Phase 6B workflow", () => {
     expect(URL.createObjectURL).toHaveBeenCalledTimes(1);
   });
 
-  it("shows a controlled message when the Worker rejects an unsupported combination", async () => {
+  it("shows only the four approved V1 voice profiles", async () => {
     const user = await buildEnglishAnswer();
-    apiFetch.mockResolvedValueOnce(
-      Response.json(
-        {
-          message:
-            "This voice combination is not available yet. Please choose another accent and voice.",
-        },
-        { status: 422 },
-      ),
-    );
 
-    await user.click(screen.getByRole("button", { name: "Canadian" }));
-    await user.click(screen.getByRole("button", { name: "Female" }));
-    await user.click(screen.getByRole("button", { name: "Read Aloud" }));
-
-    expect(apiFetch).toHaveBeenCalledTimes(3);
-    expect(apiFetch).toHaveBeenLastCalledWith(
-      "/api/speech",
-      expect.objectContaining({
-        body: JSON.stringify({
-          text: KIMI_SPOKEN_ENGLISH,
-          accent: "canadian",
-          voice: "female",
-        }),
-      }),
-    );
     expect(
-      screen.getByText(
-        "This voice combination is not available yet. Please choose another accent and voice.",
-      ),
-    ).toBeInTheDocument();
-    expect(document.querySelector("audio")).not.toBeInTheDocument();
+      screen.queryByRole("button", { name: "Canadian" }),
+    ).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "British" }));
+    expect(screen.getByRole("button", { name: "Female" })).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Male" }),
+    ).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "American" }));
+    expect(screen.getByRole("button", { name: "Female" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Male" })).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Australian" }));
+    expect(screen.getByRole("button", { name: "Male" })).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Female" }),
+    ).not.toBeInTheDocument();
+    expect(apiFetch).toHaveBeenCalledTimes(2);
   });
 
   it("prevents duplicate speech requests while synthesis is in flight", async () => {
@@ -254,6 +244,7 @@ describe("AccentForge Phase 6B workflow", () => {
       expect(document.querySelector("audio")).toBeInTheDocument();
     });
 
+    await user.click(screen.getByRole("button", { name: "American" }));
     await user.click(screen.getByRole("button", { name: "Female" }));
 
     expect(screen.getByLabelText("What I Want to Say")).toHaveValue(

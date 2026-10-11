@@ -1,6 +1,6 @@
 # AccentForge — Product Specification
 
-**Version:** 1.1
+**Version:** 1.2
 **Status:** Frozen Product Specification  
 **Product Type:** Public AI-powered IELTS Speaking learning tool  
 **Core Platforms:** Kimi + MiniMax + Cloudflare
@@ -329,27 +329,37 @@ IELTS Speaking is assessed equally across Fluency and Coherence, Lexical Resourc
 
 ## 8. Voice Playback
 
-After English generation, the user chooses:
+After English generation, the user chooses one of four human-approved V1 voice
+profiles through the linked Accent and Voice controls:
 
 ### Accent
 
 - British
 - American
 - Australian
-- Canadian
 
 ### Voice
 
 - Female
 - Male
 
-This creates eight possible listening combinations.
+The available combinations are exactly:
+
+- British Female;
+- American Female;
+- American Male;
+- Australian Male.
+
+The Voice control must show only presentations approved for the selected
+Accent. British therefore shows Female, American shows Female and Male, and
+Australian shows Male. Unavailable combinations must not appear in the V1
+interface.
 
 Only the selected combination should be generated when the user presses:
 
 **▶ Read Aloud**
 
-The system must never pre-generate all eight combinations.
+The system must never pre-generate all four profiles.
 
 Accent selection is a listening and shadowing preference.
 
@@ -373,14 +383,14 @@ Generated speech should be:
 
 Accents should sound recognisable but should not become exaggerated stereotypes.
 
-Suggested accent profiles:
+Approved V1 accent profiles:
 
 **British:** clear contemporary standard British speech  
 **American:** clear General American speech  
 **Australian:** clear contemporary General Australian speech  
-**Canadian:** clear contemporary General Canadian speech
 
-Male and Female represent two distinct synthetic voice presentations.
+Male and Female represent distinct synthetic voice presentations where both
+have been approved for the selected accent.
 
 ---
 
@@ -441,11 +451,11 @@ Button:
 
 Accent:
 
-`British | American | Australian | Canadian`
+`British | American | Australian`
 
 Voice:
 
-`Female | Male`
+Display only the approved option or options for the selected Accent.
 
 Button:
 
@@ -532,7 +542,7 @@ Required rules:
 - Chinese structuring only after explicit click;
 - English generation only after explicit click;
 - TTS only after Read Aloud;
-- only one accent/voice combination generated per request;
+- only one approved voice profile generated per request;
 - server-side rate limiting;
 - bot protection;
 - provider-level usage and budget monitoring for Kimi and MiniMax;
@@ -658,7 +668,7 @@ Suggested footer text:
 
 AccentForge V1 is complete when a first-time user can:
 
-**Open website → Select Part → Select Target Band → Enter Chinese → Polish Idea → Review/Edit Chinese → Generate IELTS English → Select Accent → Select Voice → Hear Audio**
+**Open website → Select Part → Select Target Band → Enter Chinese → Polish Idea → Review/Edit Chinese → Generate IELTS English → Select one of the four approved V1 voice profiles → Hear Audio**
 
 without:
 

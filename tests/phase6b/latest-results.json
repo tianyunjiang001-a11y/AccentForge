@@ -10,36 +10,36 @@
       "accent": "british",
       "voice": "female",
       "voiceId": "English_Graceful_Lady",
-      "status": "candidate",
-      "officialEvidence": "MiniMax voice-list API describes this system voice as having a classic British accent."
+      "status": "approved",
+      "officialEvidence": "MiniMax voice-list API describes this system voice as having a classic British accent; product-owner listening approved it for the reduced V1 voice set."
     },
     {
       "accent": "british",
       "voice": "male",
       "voiceId": null,
-      "status": "unresolved",
-      "officialEvidence": "No British male system voice is identified by the current official system list or account voice-list response."
+      "status": "deferred-post-v1",
+      "officialEvidence": "No reliable British male candidate was identified. This profile is outside the reduced V1 scope and may be reconsidered after user feedback."
     },
     {
       "accent": "american",
       "voice": "female",
       "voiceId": "English_compelling_lady1",
-      "status": "candidate",
-      "officialEvidence": "English_Whispering_girl was rejected by human review because it is too quiet and thin. MiniMax's official American-accent page exposes English_compelling_lady1 as its female example. Although it is absent from the current account get_voice response, a direct Speech 2.8 Turbo request succeeded; listening approval remains pending."
+      "status": "approved",
+      "officialEvidence": "English_Whispering_girl was rejected by human review because it is too quiet and thin. MiniMax's official American-accent page exposes English_compelling_lady1 as its female example. Two Speech 2.8 Turbo requests succeeded, and product-owner listening approved it for V1."
     },
     {
       "accent": "american",
       "voice": "male",
       "voiceId": "English_Trustworthy_Man",
-      "status": "candidate",
-      "officialEvidence": "MiniMax voice-list API describes this system voice as a young male voice with a General American accent."
+      "status": "approved",
+      "officialEvidence": "MiniMax voice-list API describes this system voice as a young male voice with a General American accent; product-owner listening approved it for V1."
     },
     {
       "accent": "australian",
       "voice": "female",
       "voiceId": null,
-      "status": "unresolved",
-      "officialEvidence": "No Australian female system voice is identified by the current official system list or account voice-list response."
+      "status": "deferred-post-v1",
+      "officialEvidence": "No reliable Australian female candidate was identified. This profile is outside the reduced V1 scope and may be reconsidered after user feedback."
     },
     {
       "accent": "australian",
@@ -52,15 +52,15 @@
       "accent": "canadian",
       "voice": "female",
       "voiceId": null,
-      "status": "unresolved",
-      "officialEvidence": "No Canadian female system voice is identified by the current official system list or account voice-list response."
+      "status": "deferred-post-v1",
+      "officialEvidence": "No reliable Canadian female candidate was identified. Canadian voices are outside the reduced V1 scope and may be reconsidered after user feedback."
     },
     {
       "accent": "canadian",
       "voice": "male",
       "voiceId": null,
-      "status": "unresolved",
-      "officialEvidence": "No Canadian male system voice is identified by the current official system list or account voice-list response."
+      "status": "deferred-post-v1",
+      "officialEvidence": "No reliable Canadian male candidate was identified. Canadian voices are outside the reduced V1 scope and may be reconsidered after user feedback."
     }
   ],
   "auditionResults": [
@@ -76,7 +76,7 @@
       "audioBytes": 262068,
       "audioReference": "audition-british-female.mp3",
       "error": null,
-      "listeningApproval": "pending human review"
+      "listeningApproval": "approved"
     },
     {
       "accent": "american",
@@ -90,7 +90,7 @@
       "audioBytes": 200436,
       "audioReference": "audition-american-female-compelling-lady1-worker.mp3",
       "error": null,
-      "listeningApproval": "pending human review"
+      "listeningApproval": "approved"
     },
     {
       "accent": "american",
@@ -104,7 +104,7 @@
       "audioBytes": 200436,
       "audioReference": "audition-american-male.mp3",
       "error": null,
-      "listeningApproval": "pending human review"
+      "listeningApproval": "approved"
     },
     {
       "accent": "australian",
