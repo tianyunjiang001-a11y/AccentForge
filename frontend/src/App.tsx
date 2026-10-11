@@ -3,7 +3,10 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { EditorCard } from "./components/EditorCard";
 import { SegmentedControl } from "./components/SegmentedControl";
 import { PRODUCT_LINKS } from "./config/productLinks";
-import { generateMockEnglish } from "./services/mockEnglish";
+import {
+  GENERATE_ENGLISH_ERROR_MESSAGE,
+  generateEnglish,
+} from "./services/generateEnglish";
 import { POLISH_ERROR_MESSAGE, polishIdea } from "./services/polishIdea";
 import type { Accent, SpeakingPart, TargetBand, Voice } from "./types";
 import { createMockAudioUrl } from "./utils/mockAudio";
@@ -68,7 +71,9 @@ function App() {
   const [isGeneratingEnglish, setIsGeneratingEnglish] = useState(false);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [polishError, setPolishError] = useState<string | null>(null);
+  const [generateError, setGenerateError] = useState<string | null>(null);
   const polishInFlight = useRef(false);
+  const generateInFlight = useRef(false);
 
   const isBusy = isPolishing || isGeneratingEnglish;
   const hasPolished = polishedFor !== null;
@@ -104,9 +109,11 @@ function App() {
     return "Start with your thoughts in Chinese. Fragments are fine.";
   }, [hasPolished, isPolishedStale, polishError]);
 
-  const englishDescription = isEnglishStale
-    ? "Your source changed. Generate English again before listening."
-    : "Your natural, level-appropriate spoken answer will appear here.";
+  const englishDescription = generateError
+    ? generateError
+    : isEnglishStale
+      ? "Your source changed. Generate English again before listening."
+      : "Your natural, level-appropriate spoken answer will appear here.";
 
   useEffect(() => {
     return () => {
@@ -123,18 +130,21 @@ function App() {
   function handlePartChange(nextPart: SpeakingPart) {
     setPart(nextPart);
     setPolishError(null);
+    setGenerateError(null);
     invalidateAudio();
   }
 
   function handleBandChange(nextBand: TargetBand) {
     setBand(nextBand);
     setPolishError(null);
+    setGenerateError(null);
     invalidateAudio();
   }
 
   function handleChineseChange(value: string) {
     setChinese(Array.from(value).slice(0, 1000).join(""));
     setPolishError(null);
+    setGenerateError(null);
     invalidateAudio();
   }
 
@@ -158,6 +168,7 @@ function App() {
       setChinese(structuredChinese);
       setPolishedFor({ band, part });
       setEnglishFor(null);
+      setGenerateError(null);
     } catch {
       setPolishError(POLISH_ERROR_MESSAGE);
     } finally {
@@ -167,15 +178,17 @@ function App() {
   }
 
   async function handleGenerateEnglish() {
-    if (!part || !band || !canGenerateEnglish) {
+    if (!part || !band || !canGenerateEnglish || generateInFlight.current) {
       return;
     }
 
+    generateInFlight.current = true;
     setIsGeneratingEnglish(true);
+    setGenerateError(null);
     invalidateAudio();
 
     try {
-      const spokenEnglish = await generateMockEnglish({
+      const spokenEnglish = await generateEnglish({
         structuredChinese: chinese,
         part,
         targetBand: band,
@@ -183,7 +196,10 @@ function App() {
 
       setEnglish(spokenEnglish);
       setEnglishFor({ band, part, structuredChinese: chinese });
+    } catch {
+      setGenerateError(GENERATE_ENGLISH_ERROR_MESSAGE);
     } finally {
+      generateInFlight.current = false;
       setIsGeneratingEnglish(false);
     }
   }
