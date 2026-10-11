@@ -1,0 +1,44 @@
+[
+  {
+    "id": "p2-sparse-old-camera",
+    "part": 2,
+    "targetBand": 7,
+    "category": "sparse old camera",
+    "rawChinese": "一个旧相机，我挺喜欢的，有时候会用。"
+  },
+  {
+    "id": "p2-sparse-meaningful-object",
+    "part": 2,
+    "targetBand": 6,
+    "category": "sparse meaningful object",
+    "rawChinese": "一条旧围巾，对我很重要，平时舍不得扔。"
+  },
+  {
+    "id": "p2-sparse-admired-person",
+    "part": 2,
+    "targetBand": 8,
+    "category": "sparse admired person",
+    "rawChinese": "一个我很佩服的人，很努力，对我有影响。"
+  },
+  {
+    "id": "p2-sparse-memorable-place",
+    "part": 2,
+    "targetBand": 7,
+    "category": "sparse memorable place",
+    "rawChinese": "一个小公园，以前常去，感觉很安静。"
+  },
+  {
+    "id": "p2-sparse-useful-skill",
+    "part": 2,
+    "targetBand": 6,
+    "category": "sparse useful skill",
+    "rawChinese": "学会做饭，刚开始不会，现在觉得很有用。"
+  },
+  {
+    "id": "p2-sparse-event",
+    "part": 2,
+    "targetBand": 5,
+    "category": "sparse event or experience",
+    "rawChinese": "一次学校活动，开始有点紧张，后来挺开心。"
+  }
+]

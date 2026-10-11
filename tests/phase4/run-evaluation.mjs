@@ -2,7 +2,8 @@ import { readFile } from "node:fs/promises";
 
 const apiBaseUrl = process.env.PHASE4_API_URL ?? "http://127.0.0.1:8787";
 const caseDelayMs = Number(process.env.PHASE4_CASE_DELAY_MS ?? "21000");
-const casesUrl = new URL("./qa-cases.json", import.meta.url);
+const casesFile = process.argv[2] ?? "./qa-cases.json";
+const casesUrl = new URL(casesFile, import.meta.url);
 const cases = JSON.parse(await readFile(casesUrl, "utf8"));
 const results = [];
 
@@ -60,6 +61,7 @@ console.log(
     {
       evaluatedAt: new Date().toISOString(),
       apiBaseUrl,
+      casesFile,
       caseDelayMs,
       successfulCases,
       totalCases: results.length,
