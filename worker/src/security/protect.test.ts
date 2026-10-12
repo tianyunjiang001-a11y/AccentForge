@@ -332,4 +332,39 @@ describe("paid route security chain", () => {
     expect(methodResponse.status).toBe(405);
     expect(execute).not.toHaveBeenCalled();
   });
+
+  it("answers only trusted CORS preflight without Siteverify or provider work", async () => {
+    const execute = vi.fn();
+    const deps = dependencies();
+    const trusted = new Request("https://worker.example/api/speech", {
+      method: "OPTIONS",
+      headers: { origin: "https://app.example" },
+    });
+    const untrusted = new Request("https://worker.example/api/speech", {
+      method: "OPTIONS",
+      headers: { origin: "https://other.example" },
+    });
+    const accepted = await protectPaidRoute(
+      trusted,
+      "speech",
+      environment(),
+      execute,
+      deps,
+    );
+    const rejected = await protectPaidRoute(
+      untrusted,
+      "speech",
+      environment(),
+      execute,
+      deps,
+    );
+    expect(accepted.status).toBe(204);
+    expect(accepted.headers.get("access-control-allow-origin")).toBe(
+      "https://app.example",
+    );
+    expect(rejected.status).toBe(403);
+    expect(rejected.headers.get("access-control-allow-origin")).toBeNull();
+    expect(deps.verify).not.toHaveBeenCalled();
+    expect(execute).not.toHaveBeenCalled();
+  });
 });

@@ -71,9 +71,11 @@ function loadScript(): Promise<TurnstileApi> {
     script.defer = true;
     script.onload = () => {
       window.clearTimeout(timer);
-      window.turnstile
-        ? resolve(window.turnstile)
-        : reject(new SecurityChallengeError());
+      if (window.turnstile) {
+        resolve(window.turnstile);
+      } else {
+        reject(new SecurityChallengeError());
+      }
     };
     script.onerror = () => {
       window.clearTimeout(timer);

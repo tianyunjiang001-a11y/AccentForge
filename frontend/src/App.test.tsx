@@ -272,6 +272,11 @@ describe("AccentForge four-profile V1 workflow", () => {
     );
     expect(screen.queryByText("Update needed")).not.toBeInTheDocument();
     expect(document.querySelector("audio")).not.toBeInTheDocument();
+    await waitFor(() =>
+      expect(URL.revokeObjectURL).toHaveBeenCalledWith(
+        "blob:accentforge-mock-audio",
+      ),
+    );
   });
 
   it("limits the idea to 1000 Unicode characters", async () => {
