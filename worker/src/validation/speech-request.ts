@@ -6,7 +6,7 @@ import type {
 import { isApprovedVoiceProfile } from "../config/voice-profiles";
 import { RequestValidationError } from "./polish-request";
 
-export const MAX_SPEECH_TEXT_CHARACTERS = 9_999;
+export const MAX_SPEECH_TEXT_CHARACTERS = 4_000;
 
 const accents: readonly Accent[] = ["british", "american", "australian"];
 const voices: readonly Voice[] = ["female", "male"];

@@ -1,5 +1,47 @@
 name = "accentforge-worker"
 main = "src/index.ts"
 compatibility_date = "2026-09-28"
-workers_dev = true
+# Production access is configured explicitly in Phase 8; no workers.dev endpoint.
+workers_dev = false
+
+# Per-location, approximate 60-second limits. Tune for shared school IPs before launch.
+[[ratelimits]]
+name = "POLISH_RATE_LIMIT"
+namespace_id = "1001"
+  [ratelimits.simple]
+  limit = 20
+  period = 60
+
+[[ratelimits]]
+name = "GENERATE_RATE_LIMIT"
+namespace_id = "1002"
+  [ratelimits.simple]
+  limit = 20
+  period = 60
+
+[[ratelimits]]
+name = "SPEECH_RATE_LIMIT"
+namespace_id = "1003"
+  [ratelimits.simple]
+  limit = 8
+  period = 60
+
+[[ratelimits]]
+name = "COMBINED_RATE_LIMIT"
+namespace_id = "1004"
+  [ratelimits.simple]
+  limit = 32
+  period = 60
+
+[[durable_objects.bindings]]
+name = "GLOBAL_USAGE"
+class_name = "GlobalUsage"
+
+[[migrations]]
+tag = "phase7-sqlite-usage-v1"
+new_sqlite_classes = ["GlobalUsage"]
+
+[vars]
+KIMI_DAILY_REQUEST_LIMIT = "150"
+MINIMAX_DAILY_REQUEST_LIMIT = "40"
 

@@ -1,4 +1,5 @@
 import type { SpeechSynthesizer } from "../services/speech-synthesis";
+import { ProviderError } from "../providers/provider-error";
 import { UnsupportedVoiceSelectionError } from "../services/speech-synthesis";
 import { RequestValidationError } from "../validation/polish-request";
 import { parseSpeechRequest } from "../validation/speech-request";
@@ -41,6 +42,19 @@ export async function handleSpeechRequest(
       return Response.json(
         { message: error.publicMessage },
         { status: 422, headers: jsonHeaders },
+      );
+    }
+
+    if (
+      error instanceof ProviderError &&
+      error.code === "upstream-rate-limited"
+    ) {
+      return Response.json(
+        {
+          message:
+            "This feature is temporarily unavailable. Please try again later.",
+        },
+        { status: 503, headers: jsonHeaders },
       );
     }
 

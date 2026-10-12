@@ -4,6 +4,8 @@ export type ProviderErrorCode =
   | "not-configured"
   | "not-implemented"
   | "upstream-failure"
+  | "upstream-rate-limited"
+  | "timeout"
   | "invalid-response";
 
 interface ProviderErrorOptions {

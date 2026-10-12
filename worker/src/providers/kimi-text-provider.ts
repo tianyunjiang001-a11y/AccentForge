@@ -1,5 +1,6 @@
 import type { KimiProviderConfig } from "../config/provider-config";
 import { ProviderError } from "./provider-error";
+import { readProviderText } from "./response-reader";
 import type {
   TextGenerationProvider,
   TextGenerationRequest,
@@ -52,35 +53,39 @@ export class KimiTextProvider implements TextGenerationProvider {
           stream: false,
           thinking: { type: "disabled" },
         }),
+        signal: AbortSignal.timeout(45_000),
       });
-    } catch {
+    } catch (error) {
       throw new ProviderError({
-        code: "upstream-failure",
+        code: isTimeout(error) ? "timeout" : "upstream-failure",
         operation: "text-generation",
         message: "The text provider request failed.",
         retryable: true,
       });
     }
 
+    if (!response.ok) {
+      throw new ProviderError({
+        code:
+          response.status === 429
+            ? "upstream-rate-limited"
+            : "upstream-failure",
+        operation: "text-generation",
+        message: "The text provider returned an error.",
+        retryable: response.status === 429 || response.status >= 500,
+      });
+    }
+
     let responseBody: string;
 
     try {
-      responseBody = await response.text();
+      responseBody = await readProviderText(response, 128_000);
     } catch {
       throw new ProviderError({
         code: "upstream-failure",
         operation: "text-generation",
         message: "The text provider response could not be read.",
         retryable: true,
-      });
-    }
-
-    if (!response.ok) {
-      throw new ProviderError({
-        code: "upstream-failure",
-        operation: "text-generation",
-        message: "The text provider returned an error.",
-        retryable: response.status === 429 || response.status >= 500,
       });
     }
 
@@ -150,6 +155,10 @@ export class KimiTextProvider implements TextGenerationProvider {
       message: "The text provider returned an invalid response.",
     });
   }
+}
+
+function isTimeout(error: unknown) {
+  return error instanceof Error && error.name === "TimeoutError";
 }
 
 interface KimiChatCompletion {

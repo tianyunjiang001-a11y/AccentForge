@@ -1,4 +1,5 @@
 import type { ChineseIdeaStructurer } from "../services/chinese-idea-structuring";
+import { ProviderError } from "../providers/provider-error";
 import {
   parsePolishRequest,
   RequestValidationError,
@@ -22,6 +23,19 @@ export async function handlePolishRequest(
       return Response.json(
         { message: error.publicMessage },
         { status: 400, headers: jsonHeaders },
+      );
+    }
+
+    if (
+      error instanceof ProviderError &&
+      error.code === "upstream-rate-limited"
+    ) {
+      return Response.json(
+        {
+          message:
+            "This feature is temporarily unavailable. Please try again later.",
+        },
+        { status: 503, headers: jsonHeaders },
       );
     }
 

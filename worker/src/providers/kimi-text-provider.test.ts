@@ -130,7 +130,7 @@ describe("KimiTextProvider", () => {
     expect(error).toBeInstanceOf(ProviderError);
     expect(error).toEqual(
       expect.objectContaining({
-        code: "upstream-failure",
+        code: "upstream-rate-limited",
         retryable: true,
       }),
     );
@@ -156,5 +156,16 @@ describe("KimiTextProvider", () => {
     await expect(provider.generateText(generationRequest)).rejects.toEqual(
       expect.objectContaining({ code: "invalid-response" }),
     );
+  });
+
+  it("normalizes timeout without retrying a chargeable request", async () => {
+    const fetcher = vi
+      .fn<typeof fetch>()
+      .mockRejectedValue(new DOMException("timeout", "TimeoutError"));
+    const provider = new KimiTextProvider(config, fetcher);
+    await expect(provider.generateText(generationRequest)).rejects.toEqual(
+      expect.objectContaining({ code: "timeout" }),
+    );
+    expect(fetcher).toHaveBeenCalledOnce();
   });
 });

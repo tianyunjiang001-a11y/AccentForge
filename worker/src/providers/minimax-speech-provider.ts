@@ -1,6 +1,7 @@
 import type { MiniMaxProviderConfig } from "../config/provider-config";
 import type { VoiceProfileMap } from "../config/voice-profiles";
 import { ProviderError } from "./provider-error";
+import { readProviderText } from "./response-reader";
 import type {
   SpeechSynthesisProvider,
   SpeechSynthesisRequest,
@@ -57,35 +58,39 @@ export class MiniMaxSpeechProvider implements SpeechSynthesisProvider {
           subtitle_enable: false,
           output_format: "hex",
         }),
+        signal: AbortSignal.timeout(120_000),
       });
-    } catch {
+    } catch (error) {
       throw new ProviderError({
-        code: "upstream-failure",
+        code: isTimeout(error) ? "timeout" : "upstream-failure",
         operation: "speech-synthesis",
         message: "The speech provider request failed.",
         retryable: true,
       });
     }
 
+    if (!response.ok) {
+      throw new ProviderError({
+        code:
+          response.status === 429
+            ? "upstream-rate-limited"
+            : "upstream-failure",
+        operation: "speech-synthesis",
+        message: "The speech provider returned an error.",
+        retryable: response.status === 429 || response.status >= 500,
+      });
+    }
+
     let responseBody: string;
 
     try {
-      responseBody = await response.text();
+      responseBody = await readProviderText(response, 12_000_000);
     } catch {
       throw new ProviderError({
         code: "upstream-failure",
         operation: "speech-synthesis",
         message: "The speech provider response could not be read.",
         retryable: true,
-      });
-    }
-
-    if (!response.ok) {
-      throw new ProviderError({
-        code: "upstream-failure",
-        operation: "speech-synthesis",
-        message: "The speech provider returned an error.",
-        retryable: response.status === 429 || response.status >= 500,
       });
     }
 
@@ -152,8 +157,11 @@ export class MiniMaxSpeechProvider implements SpeechSynthesisProvider {
       throw this.invalidResponseError();
     }
 
+    const audio = decodeHexAudio(payload.data.audio);
+    if (!hasMp3Signature(audio)) throw this.invalidResponseError();
+
     return {
-      audio: decodeHexAudio(payload.data.audio),
+      audio,
       contentType: "audio/mpeg",
       durationMs: validMetric(payload.extra_info?.audio_length),
       usageCharacters: validMetric(payload.extra_info?.usage_characters),
@@ -175,6 +183,19 @@ export class MiniMaxSpeechProvider implements SpeechSynthesisProvider {
       message: "The speech provider returned an invalid response.",
     });
   }
+}
+
+function isTimeout(error: unknown) {
+  return error instanceof Error && error.name === "TimeoutError";
+}
+
+function hasMp3Signature(value: ArrayBuffer) {
+  const bytes = new Uint8Array(value);
+  return (
+    bytes.length >= 6 &&
+    ((bytes[0] === 0x49 && bytes[1] === 0x44 && bytes[2] === 0x33) ||
+      (bytes[0] === 0xff && (bytes[1] & 0xe0) === 0xe0))
+  );
 }
 
 interface MiniMaxSpeechResponse {

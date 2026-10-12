@@ -1,4 +1,5 @@
 import type { EnglishGenerator } from "../services/english-generation";
+import { ProviderError } from "../providers/provider-error";
 import { parseGenerateRequest } from "../validation/generate-request";
 import { RequestValidationError } from "../validation/polish-request";
 
@@ -20,6 +21,19 @@ export async function handleGenerateRequest(
       return Response.json(
         { message: error.publicMessage },
         { status: 400, headers: jsonHeaders },
+      );
+    }
+
+    if (
+      error instanceof ProviderError &&
+      error.code === "upstream-rate-limited"
+    ) {
+      return Response.json(
+        {
+          message:
+            "This feature is temporarily unavailable. Please try again later.",
+        },
+        { status: 503, headers: jsonHeaders },
       );
     }
 

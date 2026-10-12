@@ -194,7 +194,10 @@ describe("MiniMaxSpeechProvider", () => {
 
     expect(httpError).toBeInstanceOf(ProviderError);
     expect(httpError).toEqual(
-      expect.objectContaining({ code: "upstream-failure", retryable: true }),
+      expect.objectContaining({
+        code: "upstream-rate-limited",
+        retryable: true,
+      }),
     );
     expect(String(httpError)).not.toContain("private vendor detail");
     expect(businessError).toEqual(
@@ -219,6 +222,11 @@ describe("MiniMaxSpeechProvider", () => {
         extra_info: { audio_format: "wav" },
         base_resp: { status_code: 0 },
       }),
+      JSON.stringify({
+        data: { audio: "000000000000", status: 2 },
+        extra_info: { audio_format: "mp3" },
+        base_resp: { status_code: 0 },
+      }),
     ];
 
     for (const payload of payloads) {
@@ -235,5 +243,16 @@ describe("MiniMaxSpeechProvider", () => {
         expect.objectContaining({ code: "invalid-response" }),
       );
     }
+  });
+
+  it("normalizes interrupted synthesis without automatic retry", async () => {
+    const fetcher = vi
+      .fn<typeof fetch>()
+      .mockRejectedValue(new DOMException("timeout", "TimeoutError"));
+    const provider = new MiniMaxSpeechProvider(config, voiceProfiles, fetcher);
+    await expect(provider.synthesizeSpeech(request)).rejects.toEqual(
+      expect.objectContaining({ code: "timeout" }),
+    );
+    expect(fetcher).toHaveBeenCalledOnce();
   });
 });
