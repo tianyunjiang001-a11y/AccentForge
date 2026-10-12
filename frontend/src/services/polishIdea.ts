@@ -1,4 +1,5 @@
 import type { SpeakingPart, TargetBand } from "../types";
+import { readSafeApiError } from "./apiError";
 
 export const POLISH_ERROR_MESSAGE =
   "Something went wrong while polishing your idea. Please try again.";
@@ -7,6 +8,7 @@ interface PolishIdeaRequest {
   part: SpeakingPart;
   rawChinese: string;
   targetBand: TargetBand;
+  turnstileToken: string;
 }
 
 interface PolishIdeaResponse {
@@ -26,6 +28,7 @@ export async function polishIdea(request: PolishIdeaRequest): Promise<string> {
         rawChinese: request.rawChinese,
         part: Number(request.part.replace("Part ", "")),
         targetBand: Number(request.targetBand),
+        turnstileToken: request.turnstileToken,
       }),
     });
   } catch {
@@ -33,7 +36,9 @@ export async function polishIdea(request: PolishIdeaRequest): Promise<string> {
   }
 
   if (!response.ok) {
-    throw new PolishIdeaError();
+    throw new PolishIdeaError(
+      await readSafeApiError(response, POLISH_ERROR_MESSAGE),
+    );
   }
 
   let body: unknown;
@@ -52,8 +57,8 @@ export async function polishIdea(request: PolishIdeaRequest): Promise<string> {
 }
 
 class PolishIdeaError extends Error {
-  constructor() {
-    super(POLISH_ERROR_MESSAGE);
+  constructor(message = POLISH_ERROR_MESSAGE) {
+    super(message);
     this.name = "PolishIdeaError";
   }
 }

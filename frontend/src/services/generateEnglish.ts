@@ -1,4 +1,5 @@
 import type { SpeakingPart, TargetBand } from "../types";
+import { readSafeApiError } from "./apiError";
 
 export const GENERATE_ENGLISH_ERROR_MESSAGE =
   "Something went wrong while generating English. Please try again.";
@@ -7,6 +8,7 @@ interface GenerateEnglishRequest {
   part: SpeakingPart;
   structuredChinese: string;
   targetBand: TargetBand;
+  turnstileToken: string;
 }
 
 interface GenerateEnglishResponse {
@@ -28,6 +30,7 @@ export async function generateEnglish(
         structuredChinese: request.structuredChinese,
         part: Number(request.part.replace("Part ", "")),
         targetBand: Number(request.targetBand),
+        turnstileToken: request.turnstileToken,
       }),
     });
   } catch {
@@ -35,7 +38,9 @@ export async function generateEnglish(
   }
 
   if (!response.ok) {
-    throw new GenerateEnglishError();
+    throw new GenerateEnglishError(
+      await readSafeApiError(response, GENERATE_ENGLISH_ERROR_MESSAGE),
+    );
   }
 
   let body: unknown;
@@ -54,8 +59,8 @@ export async function generateEnglish(
 }
 
 class GenerateEnglishError extends Error {
-  constructor() {
-    super(GENERATE_ENGLISH_ERROR_MESSAGE);
+  constructor(message = GENERATE_ENGLISH_ERROR_MESSAGE) {
+    super(message);
     this.name = "GenerateEnglishError";
   }
 }

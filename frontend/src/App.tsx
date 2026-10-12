@@ -9,6 +9,12 @@ import {
   voiceOptionsFor,
 } from "./config/voiceProfiles";
 import {
+  DAILY_LIMIT_MESSAGE,
+  RATE_LIMIT_MESSAGE,
+  SECURITY_MESSAGE,
+  UNAVAILABLE_MESSAGE,
+} from "./services/apiError";
+import {
   GENERATE_ENGLISH_ERROR_MESSAGE,
   generateEnglish,
 } from "./services/generateEnglish";
@@ -19,6 +25,7 @@ import {
   UNSUPPORTED_VOICE_MESSAGE,
 } from "./services/synthesizeSpeech";
 import type { Accent, SpeakingPart, TargetBand, Voice } from "./types";
+import { useTurnstileAction } from "./security/useTurnstileAction";
 
 const partOptions: readonly SpeakingPart[] = ["Part 1", "Part 2", "Part 3"];
 const bandOptions: readonly TargetBand[] = ["5", "6", "7", "8", "9"];
@@ -57,7 +64,22 @@ function FooterLink({
   );
 }
 
+function displayError(error: unknown, fallback: string) {
+  const message = error instanceof Error ? error.message : "";
+  return [
+    RATE_LIMIT_MESSAGE,
+    DAILY_LIMIT_MESSAGE,
+    SECURITY_MESSAGE,
+    UNAVAILABLE_MESSAGE,
+  ].includes(message)
+    ? message
+    : fallback;
+}
+
 function App() {
+  const polishSecurity = useTurnstileAction("polish");
+  const generateSecurity = useTurnstileAction("generate");
+  const speechSecurity = useTurnstileAction("speech");
   const [part, setPart] = useState<SpeakingPart | null>(null);
   const [band, setBand] = useState<TargetBand | null>(null);
   const [accent, setAccent] = useState<Accent | null>(null);
@@ -170,18 +192,20 @@ function App() {
     invalidateAudio();
 
     try {
+      const turnstileToken = await polishSecurity.getToken();
       const structuredChinese = await polishIdea({
         rawChinese: chinese,
         part,
         targetBand: band,
+        turnstileToken,
       });
 
       setChinese(structuredChinese);
       setPolishedFor({ band, part });
       setEnglishFor(null);
       setGenerateError(null);
-    } catch {
-      setPolishError(POLISH_ERROR_MESSAGE);
+    } catch (error) {
+      setPolishError(displayError(error, POLISH_ERROR_MESSAGE));
     } finally {
       polishInFlight.current = false;
       setIsPolishing(false);
@@ -200,16 +224,18 @@ function App() {
     invalidateAudio();
 
     try {
+      const turnstileToken = await generateSecurity.getToken();
       const spokenEnglish = await generateEnglish({
         structuredChinese: chinese,
         part,
         targetBand: band,
+        turnstileToken,
       });
 
       setEnglish(spokenEnglish);
       setEnglishFor({ band, part, structuredChinese: chinese });
-    } catch {
-      setGenerateError(GENERATE_ENGLISH_ERROR_MESSAGE);
+    } catch (error) {
+      setGenerateError(displayError(error, GENERATE_ENGLISH_ERROR_MESSAGE));
     } finally {
       generateInFlight.current = false;
       setIsGeneratingEnglish(false);
@@ -245,13 +271,19 @@ function App() {
     setAudioError(null);
 
     try {
-      const result = await synthesizeSpeech({ text: english, accent, voice });
+      const turnstileToken = await speechSecurity.getToken();
+      const result = await synthesizeSpeech({
+        text: english,
+        accent,
+        voice,
+        turnstileToken,
+      });
       setAudioUrl(result.audioUrl);
     } catch (error) {
       setAudioError(
         error instanceof Error && error.message === UNSUPPORTED_VOICE_MESSAGE
           ? UNSUPPORTED_VOICE_MESSAGE
-          : AUDIO_ERROR_MESSAGE,
+          : displayError(error, AUDIO_ERROR_MESSAGE),
       );
     } finally {
       speechInFlight.current = false;
@@ -289,6 +321,7 @@ function App() {
 
         <section className="workspace" aria-label="Speaking answer workspace">
           <EditorCard
+            actionSecurity={polishSecurity.element}
             actionDisabled={!canPolish}
             actionLabel={
               isPolishing ? "Polishing your idea…" : "Polish My Idea"
@@ -307,6 +340,7 @@ function App() {
           />
 
           <EditorCard
+            actionSecurity={generateSecurity.element}
             actionDisabled={!canGenerateEnglish}
             actionLabel={
               isGeneratingEnglish
@@ -360,6 +394,7 @@ function App() {
               {isSynthesizing ? "Generating audio…" : "Read Aloud"}
             </button>
           </div>
+          {speechSecurity.element}
 
           {audioError ? (
             <p className="voice-feedback" role="alert">

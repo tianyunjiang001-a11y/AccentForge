@@ -326,6 +326,10 @@ textarea:focus-visible,
   line-height: 1.5;
 }
 
+.turnstile-slot {
+  max-width: 100%;
+}
+
 .audio-result {
   display: flex;
   align-items: center;

@@ -4,6 +4,19 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import App from "./App";
 
+const challengeState = vi.hoisted(() => ({ fail: false }));
+vi.mock("./security/useTurnstileAction", () => ({
+  useTurnstileAction: (action: string) => ({
+    getToken: async () => {
+      if (challengeState.fail) {
+        throw new Error("Please complete the security check and try again.");
+      }
+      return `test-token-${action}`;
+    },
+    element: null,
+  }),
+}));
+
 const KIMI_STRUCTURED_CHINESE =
   "我比较喜欢住在大城市，主要是因为工作机会更多，而且生活通常也更方便。不过，大城市的生活节奏比较快，压力也会更明显，所以我觉得是否适合长期生活还是要看个人选择。";
 const KIMI_SPOKEN_ENGLISH =
@@ -12,6 +25,7 @@ const KIMI_SPOKEN_ENGLISH =
 const apiFetch = vi.fn();
 
 beforeEach(() => {
+  challengeState.fail = false;
   apiFetch.mockImplementation(async (input: RequestInfo | URL) => {
     if (String(input) === "/api/polish") {
       return {
@@ -79,6 +93,7 @@ describe("AccentForge four-profile V1 workflow", () => {
           rawChinese: "我喜欢大城市，工作机会多，但是压力也很大。",
           part: 3,
           targetBand: 7,
+          turnstileToken: "test-token-polish",
         }),
       }),
     );
@@ -90,6 +105,7 @@ describe("AccentForge four-profile V1 workflow", () => {
           structuredChinese: KIMI_STRUCTURED_CHINESE,
           part: 3,
           targetBand: 7,
+          turnstileToken: "test-token-generate",
         }),
       }),
     );
@@ -112,6 +128,7 @@ describe("AccentForge four-profile V1 workflow", () => {
           text: KIMI_SPOKEN_ENGLISH,
           accent: "british",
           voice: "female",
+          turnstileToken: "test-token-speech",
         }),
       }),
     );
@@ -173,7 +190,7 @@ describe("AccentForge four-profile V1 workflow", () => {
     fireEvent.click(readButton);
     fireEvent.click(readButton);
 
-    expect(apiFetch).toHaveBeenCalledTimes(3);
+    await waitFor(() => expect(apiFetch).toHaveBeenCalledTimes(3));
     expect(
       screen.getByRole("button", { name: "Generating audio…" }),
     ).toBeDisabled();
@@ -291,6 +308,22 @@ describe("AccentForge four-profile V1 workflow", () => {
     expect(screen.getByLabelText("What I Want to Say")).toHaveValue("喜欢咖啡");
   });
 
+  it("does not call a paid endpoint after a challenge failure", async () => {
+    challengeState.fail = true;
+    const user = userEvent.setup();
+    render(<App />);
+    await user.click(screen.getByRole("button", { name: "Part 1" }));
+    await user.click(screen.getByRole("button", { name: "6" }));
+    await user.type(screen.getByLabelText("What I Want to Say"), "喜欢咖啡");
+    await user.click(screen.getByRole("button", { name: "Polish My Idea" }));
+    expect(
+      await screen.findByText(
+        "Please complete the security check and try again.",
+      ),
+    ).toBeInTheDocument();
+    expect(apiFetch).not.toHaveBeenCalled();
+  });
+
   it("generates from the latest learner-edited Structured Chinese", async () => {
     const user = userEvent.setup();
     render(<App />);
@@ -314,6 +347,7 @@ describe("AccentForge four-profile V1 workflow", () => {
           structuredChinese: latestChinese,
           part: 2,
           targetBand: 8,
+          turnstileToken: "test-token-generate",
         }),
       }),
     );
@@ -371,6 +405,23 @@ describe("AccentForge four-profile V1 workflow", () => {
       await screen.findByText(
         "Audio could not be generated. Please try again.",
       ),
+    ).toBeInTheDocument();
+    expect(document.querySelector("audio")).not.toBeInTheDocument();
+  });
+
+  it("shows a restrained rate-limit message without producing audio", async () => {
+    const user = await buildEnglishAnswer();
+    apiFetch.mockResolvedValueOnce(
+      Response.json(
+        { message: "Please wait a moment before trying again." },
+        { status: 429 },
+      ),
+    );
+    await user.click(screen.getByRole("button", { name: "Australian" }));
+    await user.click(screen.getByRole("button", { name: "Male" }));
+    await user.click(screen.getByRole("button", { name: "Read Aloud" }));
+    expect(
+      await screen.findByText("Please wait a moment before trying again."),
     ).toBeInTheDocument();
     expect(document.querySelector("audio")).not.toBeInTheDocument();
   });

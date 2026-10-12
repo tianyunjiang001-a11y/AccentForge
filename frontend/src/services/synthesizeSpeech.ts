@@ -1,4 +1,5 @@
 import type { Accent, Voice } from "../types";
+import { readSafeApiError } from "./apiError";
 
 export const AUDIO_ERROR_MESSAGE =
   "Audio could not be generated. Please try again.";
@@ -9,6 +10,7 @@ interface SynthesizeSpeechInput {
   text: string;
   accent: Accent;
   voice: Voice;
+  turnstileToken: string;
 }
 
 export interface SynthesizedAudio {
@@ -30,6 +32,7 @@ export async function synthesizeSpeech(
         text: input.text,
         accent: input.accent.toLowerCase(),
         voice: input.voice.toLowerCase(),
+        turnstileToken: input.turnstileToken,
       }),
     });
   } catch {
@@ -41,7 +44,7 @@ export async function synthesizeSpeech(
   }
 
   if (!response.ok) {
-    throw new Error(AUDIO_ERROR_MESSAGE);
+    throw new Error(await readSafeApiError(response, AUDIO_ERROR_MESSAGE));
   }
 
   const contentType = response.headers.get("content-type") ?? "";
