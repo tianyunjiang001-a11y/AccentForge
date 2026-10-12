@@ -1,0 +1,48 @@
+# Local security smoke test only. No paid-provider credentials or deployment target.
+name = "accentforge-phase7-local-security-test"
+main = "../../worker/src/index.ts"
+compatibility_date = "2026-09-28"
+workers_dev = false
+
+[[ratelimits]]
+name = "POLISH_RATE_LIMIT"
+namespace_id = "7101"
+  [ratelimits.simple]
+  limit = 20
+  period = 60
+
+[[ratelimits]]
+name = "GENERATE_RATE_LIMIT"
+namespace_id = "7102"
+  [ratelimits.simple]
+  limit = 20
+  period = 60
+
+[[ratelimits]]
+name = "SPEECH_RATE_LIMIT"
+namespace_id = "7103"
+  [ratelimits.simple]
+  limit = 8
+  period = 60
+
+[[ratelimits]]
+name = "COMBINED_RATE_LIMIT"
+namespace_id = "7104"
+  [ratelimits.simple]
+  limit = 32
+  period = 60
+
+[[durable_objects.bindings]]
+name = "GLOBAL_USAGE"
+class_name = "GlobalUsage"
+
+[[migrations]]
+tag = "phase7-local-sqlite-v1"
+new_sqlite_classes = ["GlobalUsage"]
+
+[vars]
+SECURITY_ENV = "development"
+TURNSTILE_SITE_KEY = "1x00000000000000000000AA"
+TURNSTILE_SECRET_KEY = "1x0000000000000000000000000000000AA"
+KIMI_DAILY_REQUEST_LIMIT = "1"
+MINIMAX_DAILY_REQUEST_LIMIT = "1"
