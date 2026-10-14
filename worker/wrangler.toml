@@ -42,6 +42,14 @@ tag = "phase7-sqlite-usage-v1"
 new_sqlite_classes = ["GlobalUsage"]
 
 [vars]
+# First production deployment is deliberately non-chargeable. Local .dev.vars
+# may explicitly enable approved development testing; never copy it to Pages.
+SECURITY_ENV = "production"
+API_ENABLED = "false"
+KIMI_ENABLED = "false"
+MINIMAX_ENABLED = "false"
+ALLOWED_ORIGINS = "https://accentforge.pages.dev"
+TURNSTILE_ALLOWED_HOSTNAMES = "accentforge.pages.dev"
 KIMI_DAILY_REQUEST_LIMIT = "150"
 MINIMAX_DAILY_REQUEST_LIMIT = "40"
 
