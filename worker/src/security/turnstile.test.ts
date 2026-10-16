@@ -71,11 +71,14 @@ describe("Turnstile Siteverify", () => {
     await expect(
       verifyTurnstile("token", "polish", url, env, response(result)),
     ).resolves.toBe(false);
-    expect(console.info).toHaveBeenCalledWith("accentforge.turnstile", {
-      route: "polish",
-      category,
-      siteverifyStatus: 200,
-    });
+    expect(console.info).toHaveBeenCalledWith(
+      "accentforge.turnstile",
+      expect.objectContaining({
+        route: "polish",
+        category,
+        siteverifyStatus: 200,
+      }),
+    );
   });
 
   it("fails closed on Siteverify network errors", async () => {

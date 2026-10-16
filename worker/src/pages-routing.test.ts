@@ -55,6 +55,41 @@ describe("Pages API forwarding", () => {
     expect(fetch).toHaveBeenCalledExactlyOnceWith(incoming);
   });
 
+  it("forwards only POST on the temporary diagnostic path", async () => {
+    const incoming = request("/api/turnstile-diagnostic");
+    const fetch = vi
+      .fn()
+      .mockResolvedValue(Response.json({ category: "verified" }));
+    const response = await onRequest({
+      request: incoming,
+      env: { ACCENTFORGE_API: { fetch } },
+    });
+    expect(response.status).toBe(200);
+    expect(fetch).toHaveBeenCalledExactlyOnceWith(incoming);
+    for (const method of ["GET", "OPTIONS"]) {
+      const blocked = await onRequest({
+        request: request("/api/turnstile-diagnostic", productionOrigin, method),
+        env: { ACCENTFORGE_API: { fetch } },
+      });
+      expect(blocked.status).toBe(404);
+      expect(blocked.headers.get("allow")).toBeNull();
+    }
+    expect(fetch).toHaveBeenCalledOnce();
+  });
+
+  it("does not forward the diagnostic path on a preview hostname", async () => {
+    const fetch = vi.fn();
+    const response = await onRequest({
+      request: request(
+        "/api/turnstile-diagnostic",
+        "https://preview.accentforge.pages.dev",
+      ),
+      env: { ACCENTFORGE_API: { fetch } },
+    });
+    expect(response.status).toBe(403);
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
   it.each(["/api/unknown", "/api/polish/extra", "/api/speech/"])(
     "rejects unsupported path %s without invoking the binding",
     async (path) => {
