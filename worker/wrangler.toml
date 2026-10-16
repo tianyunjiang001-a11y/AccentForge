@@ -50,6 +50,18 @@ KIMI_ENABLED = "false"
 MINIMAX_ENABLED = "false"
 ALLOWED_ORIGINS = "https://accentforge.pages.dev"
 TURNSTILE_ALLOWED_HOSTNAMES = "accentforge.pages.dev"
+TURNSTILE_SITE_KEY = "0x4AAAAAAFWuKzqWsSWw9Zb6"
 KIMI_DAILY_REQUEST_LIMIT = "150"
 MINIMAX_DAILY_REQUEST_LIMIT = "40"
+
+KIMI_BASE_URL = "https://api.moonshot.cn/v1"
+KIMI_TEXT_MODEL = "kimi-k2.6"
+
+MINIMAX_BASE_URL = "https://api.minimax.cn"
+MINIMAX_TTS_MODEL = "speech-2.8-turbo"
+MINIMAX_TTS_SPEED = "1.0"
+MINIMAX_BRITISH_FEMALE_VOICE_ID = "English_Graceful_Lady"
+MINIMAX_AMERICAN_FEMALE_VOICE_ID = "English_compelling_lady1"
+MINIMAX_AMERICAN_MALE_VOICE_ID = "English_Trustworthy_Man"
+MINIMAX_AUSTRALIAN_MALE_VOICE_ID = "English_Aussie_Bloke"
 
