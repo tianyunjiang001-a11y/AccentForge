@@ -9,6 +9,10 @@ import { passesRateLimits } from "./rate-limit";
 import { checkPaidRequest } from "./request";
 import { safeJson, secureResponse } from "./response";
 import { verifyTurnstile } from "./turnstile";
+import {
+  recordTurnstileDiagnostic,
+  type BeforeSiteverifyReason,
+} from "./turnstile-diagnostics";
 import type { PaidRoute, SecurityEnvironment } from "./types";
 
 export async function protectPaidRoute(
@@ -29,6 +33,16 @@ export async function protectPaidRoute(
     origin && allowedOrigins(env, local).includes(origin) ? origin : null;
   const finish = (response: Response) =>
     secureResponse(response, trustedOrigin);
+  const rejectBeforeSiteverify = (
+    response: Response,
+    reason: BeforeSiteverifyReason,
+  ) => {
+    recordTurnstileDiagnostic(route, "before_siteverify", {
+      workerStatus: response.status,
+      reason,
+    });
+    return finish(response);
+  };
 
   if (request.method === "OPTIONS") {
     return finish(
@@ -38,31 +52,43 @@ export async function protectPaidRoute(
     );
   }
   if (!isPaidRouteEnabled(env, route, requestUrl)) {
-    return finish(
+    return rejectBeforeSiteverify(
       safeJson(
         "This feature is temporarily unavailable. Please try again later.",
         503,
       ),
+      "api_disabled",
     );
   }
   if (!isSecurityConfigured(env, requestUrl)) {
-    return finish(
+    return rejectBeforeSiteverify(
       safeJson(
         "This feature is temporarily unavailable. Please try again later.",
         503,
       ),
+      "security_config",
     );
   }
   if (origin && !trustedOrigin) {
-    return finish(safeJson("This request is not supported.", 403));
+    return rejectBeforeSiteverify(
+      safeJson("This request is not supported.", 403),
+      "untrusted_origin",
+    );
   }
 
   const checked = await checkPaidRequest(request, route);
-  if (checked.error) return finish(checked.error);
+  if (checked.error)
+    return rejectBeforeSiteverify(
+      checked.error,
+      checked.error.status === 403 ? "missing_token" : "invalid_request",
+    );
 
   const rate = dependencies.rate ?? passesRateLimits;
   if (!(await rate(request, route, env))) {
-    return finish(safeJson("Please wait a moment before trying again.", 429));
+    return rejectBeforeSiteverify(
+      safeJson("Please wait a moment before trying again.", 429),
+      "rate_limited",
+    );
   }
 
   const verify = dependencies.verify ?? verifyTurnstile;

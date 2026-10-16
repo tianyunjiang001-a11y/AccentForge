@@ -156,12 +156,21 @@ describe("secured Worker route integration with mocked providers", () => {
   it("makes no paid provider request after a failed security check", async () => {
     const fetcher = fakeProviderFetch({ siteverify: false });
     vi.stubGlobal("fetch", fetcher);
+    const reserve = vi
+      .fn()
+      .mockResolvedValue(new Response(null, { status: 200 }));
+    const env = environment();
+    env.GLOBAL_USAGE = {
+      idFromName: () => "global-id",
+      get: () => ({ fetch: reserve }),
+    } as unknown as DurableObjectNamespace;
     const response = await app.fetch(
       request("polish", { rawChinese: "咖啡", part: 1, targetBand: 6 }),
-      environment(),
+      env,
     );
     expect(response.status).toBe(403);
     expect(fetcher).toHaveBeenCalledOnce();
+    expect(reserve).not.toHaveBeenCalled();
     expect(String(fetcher.mock.calls[0][0])).toContain(
       "turnstile/v0/siteverify",
     );

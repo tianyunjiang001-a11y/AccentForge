@@ -108,6 +108,7 @@ describe("paid route security chain", () => {
   );
 
   it("rejects missing token before siteverify, quota or a paid provider", async () => {
+    const diagnostic = vi.spyOn(console, "info").mockImplementation(() => {});
     const execute = vi.fn();
     const deps = dependencies();
     const response = await protectPaidRoute(
@@ -122,6 +123,16 @@ describe("paid route security chain", () => {
     expect(deps.verify).not.toHaveBeenCalled();
     expect(deps.quota).not.toHaveBeenCalled();
     expect(execute).not.toHaveBeenCalled();
+    expect(diagnostic).toHaveBeenCalledWith("accentforge.turnstile", {
+      route: "polish",
+      category: "before_siteverify",
+      workerStatus: 403,
+      reason: "missing_token",
+    });
+    const logged = JSON.stringify(diagnostic.mock.calls);
+    expect(logged).not.toContain("咖啡");
+    expect(logged).not.toContain("192.0.2.1");
+    diagnostic.mockRestore();
   });
 
   it.each(["invalid", "expired-or-replayed"])(
