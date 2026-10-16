@@ -9,6 +9,9 @@ export type TurnstileDiagnosticCategory =
   | "action_mismatch"
   | "verified";
 
+export type SiteverifyRejectionReason =
+  "invalid_secret" | "invalid_response" | "expired_or_replayed" | "other";
+
 export type BeforeSiteverifyReason =
   | "api_disabled"
   | "security_config"
@@ -24,6 +27,7 @@ export function recordTurnstileDiagnostic(
     workerStatus?: number;
     siteverifyStatus?: number;
     reason?: BeforeSiteverifyReason;
+    siteverifyReason?: SiteverifyRejectionReason;
   } = {},
 ) {
   // Only fixed categories and numeric status codes belong in operational logs.

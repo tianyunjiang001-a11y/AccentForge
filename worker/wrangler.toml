@@ -34,6 +34,14 @@ namespace_id = "1004"
   limit = 32
   period = 60
 
+# Temporary, owner-only verification tool. No paid quota or provider access.
+[[ratelimits]]
+name = "TURNSTILE_DIAGNOSTIC_RATE_LIMIT"
+namespace_id = "1005"
+  [ratelimits.simple]
+  limit = 1
+  period = 60
+
 [[durable_objects.bindings]]
 name = "GLOBAL_USAGE"
 class_name = "GlobalUsage"
@@ -49,6 +57,7 @@ SECURITY_ENV = "production"
 API_ENABLED = "false"
 KIMI_ENABLED = "false"
 MINIMAX_ENABLED = "false"
+TURNSTILE_DIAGNOSTIC_ENABLED = "false"
 ALLOWED_ORIGINS = "https://accentforge.pages.dev"
 TURNSTILE_ALLOWED_HOSTNAMES = "accentforge.pages.dev"
 TURNSTILE_SITE_KEY = "0x4AAAAAAFWuKzqWsSWw9Zb6"
