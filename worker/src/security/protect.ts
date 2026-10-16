@@ -37,7 +37,7 @@ export async function protectPaidRoute(
         : safeJson("This request is not supported.", 403),
     );
   }
-  if (!isPaidRouteEnabled(env, route)) {
+  if (!isPaidRouteEnabled(env, route, requestUrl)) {
     return finish(
       safeJson(
         "This feature is temporarily unavailable. Please try again later.",

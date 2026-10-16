@@ -7,6 +7,10 @@ const rate = { limit: async () => ({ success: true }) };
 
 function environment(): SecurityEnvironment {
   return {
+    SECURITY_ENV: "production",
+    API_ENABLED: "true",
+    KIMI_ENABLED: "true",
+    MINIMAX_ENABLED: "true",
     KIMI_API_KEY: "unit-only-kimi-key",
     KIMI_BASE_URL: "https://kimi.unit.test/v1",
     KIMI_TEXT_MODEL: "unit-model",

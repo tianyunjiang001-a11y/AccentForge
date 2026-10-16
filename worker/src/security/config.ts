@@ -23,13 +23,15 @@ export function isLocalSecurityMode(env: SecurityEnvironment, url: URL) {
   );
 }
 
-export function isPaidRouteEnabled(env: SecurityEnvironment, route: PaidRoute) {
+export function isPaidRouteEnabled(
+  env: SecurityEnvironment,
+  route: PaidRoute,
+  requestUrl: URL,
+) {
   const relevant = route === "speech" ? env.MINIMAX_ENABLED : env.KIMI_ENABLED;
-  return switchEnabled(env.API_ENABLED) && switchEnabled(relevant);
-}
-
-function switchEnabled(value: string | undefined) {
-  return value === undefined || value === "true";
+  const validSecurityMode =
+    env.SECURITY_ENV === "production" || isLocalSecurityMode(env, requestUrl);
+  return validSecurityMode && env.API_ENABLED === "true" && relevant === "true";
 }
 
 export function parseDailyLimit(value: string | undefined, fallback: number) {

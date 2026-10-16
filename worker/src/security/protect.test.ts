@@ -9,6 +9,10 @@ function environment(
   overrides: Partial<SecurityEnvironment> = {},
 ): SecurityEnvironment {
   return {
+    SECURITY_ENV: "production",
+    API_ENABLED: "true",
+    KIMI_ENABLED: "true",
+    MINIMAX_ENABLED: "true",
     TURNSTILE_SITE_KEY: "real-sitekey-placeholder",
     TURNSTILE_SECRET_KEY: "real-secret-placeholder",
     TURNSTILE_ALLOWED_HOSTNAMES: "app.example",
@@ -174,11 +178,40 @@ describe("paid route security chain", () => {
   });
 
   it.each([
-    ["all", { API_ENABLED: "false" }, "polish"],
-    ["Kimi", { KIMI_ENABLED: "false" }, "generate"],
-    ["MiniMax", { MINIMAX_ENABLED: "false" }, "speech"],
+    [
+      "all switches false",
+      { API_ENABLED: "false", KIMI_ENABLED: "false", MINIMAX_ENABLED: "false" },
+      "polish",
+    ],
+    ["main switch missing", { API_ENABLED: undefined }, "polish"],
+    ["Kimi switch missing", { KIMI_ENABLED: undefined }, "generate"],
+    ["MiniMax switch missing", { MINIMAX_ENABLED: undefined }, "speech"],
+    ["main switch empty", { API_ENABLED: "" }, "polish"],
+    ["main switch malformed", { API_ENABLED: "TRUE" }, "polish"],
+    ["Kimi switch empty", { KIMI_ENABLED: "" }, "generate"],
+    ["Kimi switch malformed", { KIMI_ENABLED: "1" }, "polish"],
+    ["MiniMax switch empty", { MINIMAX_ENABLED: "" }, "speech"],
+    ["MiniMax switch malformed", { MINIMAX_ENABLED: " true " }, "speech"],
+    [
+      "Kimi disabled while MiniMax enabled",
+      { KIMI_ENABLED: "false" },
+      "generate",
+    ],
+    [
+      "MiniMax disabled while Kimi enabled",
+      { MINIMAX_ENABLED: "false" },
+      "speech",
+    ],
+    ["security environment missing", { SECURITY_ENV: undefined }, "polish"],
+    ["security environment empty", { SECURITY_ENV: "" }, "generate"],
+    ["security environment malformed", { SECURITY_ENV: "staging" }, "speech"],
+    [
+      "development mode on production host",
+      { SECURITY_ENV: "development" },
+      "polish",
+    ],
   ] as const)(
-    "honors %s emergency disable before external checks",
+    "fails closed for %s before external checks",
     async (_name, overrides, route) => {
       const execute = vi.fn();
       const deps = dependencies();
@@ -192,7 +225,56 @@ describe("paid route security chain", () => {
       expect(response.status).toBe(503);
       expect(deps.rate).not.toHaveBeenCalled();
       expect(deps.verify).not.toHaveBeenCalled();
+      expect(deps.quota).not.toHaveBeenCalled();
       expect(execute).not.toHaveBeenCalled();
+    },
+  );
+
+  it.each(["localhost", "127.0.0.1"])(
+    "permits explicitly enabled local development on %s",
+    async (hostname) => {
+      const execute = vi.fn().mockResolvedValue(Response.json({ ok: true }));
+      const deps = dependencies();
+      const localRequest = new Request(`http://${hostname}:8787/api/polish`, {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          origin: "http://127.0.0.1:5173",
+        },
+        body: JSON.stringify(validBody("polish")),
+      });
+      const response = await protectPaidRoute(
+        localRequest,
+        "polish",
+        environment({
+          SECURITY_ENV: "development",
+          ALLOWED_ORIGINS: "http://127.0.0.1:5173",
+          TURNSTILE_ALLOWED_HOSTNAMES: hostname,
+        }),
+        execute,
+        deps,
+      );
+      expect(response.status).toBe(200);
+      expect(execute).toHaveBeenCalledOnce();
+    },
+  );
+
+  it.each([
+    ["Kimi", "polish", { MINIMAX_ENABLED: "false" }],
+    ["MiniMax", "speech", { KIMI_ENABLED: "false" }],
+  ] as const)(
+    "allows explicitly enabled %s while the other provider is disabled",
+    async (_provider, route, overrides) => {
+      const execute = vi.fn().mockResolvedValue(Response.json({ ok: true }));
+      const response = await protectPaidRoute(
+        request(route),
+        route,
+        environment(overrides),
+        execute,
+        dependencies(),
+      );
+      expect(response.status).toBe(200);
+      expect(execute).toHaveBeenCalledOnce();
     },
   );
 
