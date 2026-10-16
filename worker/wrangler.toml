@@ -3,6 +3,7 @@ main = "src/index.ts"
 compatibility_date = "2026-09-28"
 # Production access is configured explicitly in Phase 8; no workers.dev endpoint.
 workers_dev = false
+preview_urls = false
 
 # Per-location, approximate 60-second limits. Tune for shared school IPs before launch.
 [[ratelimits]]
@@ -51,8 +52,8 @@ MINIMAX_ENABLED = "false"
 ALLOWED_ORIGINS = "https://accentforge.pages.dev"
 TURNSTILE_ALLOWED_HOSTNAMES = "accentforge.pages.dev"
 TURNSTILE_SITE_KEY = "0x4AAAAAAFWuKzqWsSWw9Zb6"
-KIMI_DAILY_REQUEST_LIMIT = "150"
-MINIMAX_DAILY_REQUEST_LIMIT = "40"
+KIMI_DAILY_REQUEST_LIMIT = "4"
+MINIMAX_DAILY_REQUEST_LIMIT = "2"
 
 KIMI_BASE_URL = "https://api.moonshot.cn/v1"
 KIMI_TEXT_MODEL = "kimi-k2.6"

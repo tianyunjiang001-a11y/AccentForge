@@ -24,12 +24,15 @@ test("Worker first-deployment switches and production origin fail closed", () =>
   for (const [key, value] of Object.entries({
     name: '"accentforge-worker"',
     workers_dev: "false",
+    preview_urls: "false",
     SECURITY_ENV: '"production"',
     API_ENABLED: '"false"',
     KIMI_ENABLED: '"false"',
     MINIMAX_ENABLED: '"false"',
     ALLOWED_ORIGINS: '"https://accentforge.pages.dev"',
     TURNSTILE_ALLOWED_HOSTNAMES: '"accentforge.pages.dev"',
+    KIMI_DAILY_REQUEST_LIMIT: '"4"',
+    MINIMAX_DAILY_REQUEST_LIMIT: '"2"',
   })) {
     assert.ok(lines.includes(`${key} = ${value}`), `${key} must be ${value}`);
   }
