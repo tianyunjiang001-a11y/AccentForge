@@ -51,7 +51,11 @@ describe("temporary non-paid diagnostic interface", () => {
     expect(fetcher).not.toHaveBeenCalled();
 
     act(() => options?.callback("single-use-local-token"));
-    expect(await screen.findByRole("status")).toHaveTextContent("verified");
+    await waitFor(() =>
+      expect(screen.getByRole("status")).toHaveTextContent(
+        "HTTP 200 — verified",
+      ),
+    );
     expect(fetcher).toHaveBeenCalledOnce();
     const [path, init] = fetcher.mock.calls[0];
     expect(path).toBe("/api/turnstile-diagnostic");
@@ -64,31 +68,86 @@ describe("temporary non-paid diagnostic interface", () => {
     expect(widget.remove).toHaveBeenCalledWith("diagnostic-widget");
   });
 
-  it("does not submit after a failed challenge or show unapproved response text", async () => {
+  it("identifies token acquisition failure before POST", async () => {
     render(<TurnstileDiagnostic />);
     fireEvent.click(screen.getByRole("button", { name: "Verify once" }));
     await waitFor(() => expect(widget.execute).toHaveBeenCalledOnce());
     act(() => options?.["error-callback"]());
-    expect(await screen.findByRole("status")).toHaveTextContent(
-      "The check could not be completed.",
+    await waitFor(() =>
+      expect(screen.getByRole("status")).toHaveTextContent(
+        "Token acquisition failed before POST.",
+      ),
     );
     expect(fetcher).not.toHaveBeenCalled();
     expect(screen.getByRole("button", { name: "Verify once" })).toBeDisabled();
   });
 
-  it("shows only allowlisted diagnostic categories", async () => {
+  it("identifies POST network failure without exposing transport details", async () => {
+    fetcher.mockRejectedValueOnce(new Error("private transport detail"));
+    render(<TurnstileDiagnostic />);
+    fireEvent.click(screen.getByRole("button", { name: "Verify once" }));
+    await waitFor(() => expect(widget.execute).toHaveBeenCalledOnce());
+    act(() => options?.callback("one-token"));
+    await waitFor(() =>
+      expect(screen.getByRole("status")).toHaveTextContent(
+        "POST network failure.",
+      ),
+    );
+    expect(fetcher).toHaveBeenCalledOnce();
+    expect(
+      screen.queryByText(/private transport detail/),
+    ).not.toBeInTheDocument();
+  });
+
+  it("preserves HTTP status when JSON parsing fails", async () => {
     fetcher.mockResolvedValueOnce(
-      Response.json({ category: "private-upstream-detail" }),
+      new Response("private upstream body", { status: 502 }),
     );
     render(<TurnstileDiagnostic />);
     fireEvent.click(screen.getByRole("button", { name: "Verify once" }));
     await waitFor(() => expect(widget.execute).toHaveBeenCalledOnce());
     act(() => options?.callback("one-token"));
-    expect(await screen.findByRole("status")).toHaveTextContent(
-      "The check could not be completed.",
+    await waitFor(() =>
+      expect(screen.getByRole("status")).toHaveTextContent(
+        "HTTP 502 — response processing failed.",
+      ),
+    );
+    expect(screen.queryByText(/private upstream body/)).not.toBeInTheDocument();
+  });
+
+  it("preserves HTTP status without showing unapproved response text", async () => {
+    fetcher.mockResolvedValueOnce(
+      Response.json({ category: "private-upstream-detail" }, { status: 403 }),
+    );
+    render(<TurnstileDiagnostic />);
+    fireEvent.click(screen.getByRole("button", { name: "Verify once" }));
+    await waitFor(() => expect(widget.execute).toHaveBeenCalledOnce());
+    act(() => options?.callback("one-token"));
+    await waitFor(() =>
+      expect(screen.getByRole("status")).toHaveTextContent(
+        "HTTP 403 — response processing failed.",
+      ),
     );
     expect(
       screen.queryByText(/private-upstream-detail/),
     ).not.toBeInTheDocument();
+  });
+
+  it("shows the HTTP status and allowlisted Worker diagnostic category", async () => {
+    fetcher.mockResolvedValueOnce(
+      Response.json(
+        { category: "siteverify_rejected", reason: "invalid_secret" },
+        { status: 403 },
+      ),
+    );
+    render(<TurnstileDiagnostic />);
+    fireEvent.click(screen.getByRole("button", { name: "Verify once" }));
+    await waitFor(() => expect(widget.execute).toHaveBeenCalledOnce());
+    act(() => options?.callback("one-token"));
+    await waitFor(() =>
+      expect(screen.getByRole("status")).toHaveTextContent(
+        "HTTP 403 — siteverify_rejected — invalid_secret",
+      ),
+    );
   });
 });

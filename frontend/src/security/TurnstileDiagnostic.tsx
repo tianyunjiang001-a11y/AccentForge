@@ -36,20 +36,34 @@ export function TurnstileDiagnostic() {
     if (started.current) return;
     started.current = true;
     setStatus("Checking…");
+    let turnstileToken: string;
     try {
-      const turnstileToken = await challenge.getToken();
-      const response = await fetch("/api/turnstile-diagnostic", {
+      turnstileToken = await challenge.getToken();
+    } catch {
+      setStatus("Token acquisition failed before POST.");
+      return;
+    }
+
+    let response: Response;
+    try {
+      response = await fetch("/api/turnstile-diagnostic", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ turnstileToken }),
       });
+    } catch {
+      setStatus("POST network failure.");
+      return;
+    }
+
+    try {
       const result: unknown = await response.json();
       if (!isSafeResult(result)) throw new Error("Invalid result");
       setStatus(
-        `${result.category}${result.reason ? ` — ${result.reason}` : ""}`,
+        `HTTP ${response.status} — ${result.category}${result.reason ? ` — ${result.reason}` : ""}`,
       );
     } catch {
-      setStatus("The check could not be completed.");
+      setStatus(`HTTP ${response.status} — response processing failed.`);
     }
   }
 
