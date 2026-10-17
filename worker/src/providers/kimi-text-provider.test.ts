@@ -132,6 +132,7 @@ describe("KimiTextProvider", () => {
       expect.objectContaining({
         code: "upstream-rate-limited",
         retryable: true,
+        upstreamStatus: 429,
       }),
     );
     expect(String(error)).not.toContain("private vendor detail");
@@ -154,7 +155,10 @@ describe("KimiTextProvider", () => {
     const provider = new KimiTextProvider(config, fetcher);
 
     await expect(provider.generateText(generationRequest)).rejects.toEqual(
-      expect.objectContaining({ code: "invalid-response" }),
+      expect.objectContaining({
+        code: "invalid-response",
+        upstreamStatus: 200,
+      }),
     );
   });
 
@@ -164,7 +168,7 @@ describe("KimiTextProvider", () => {
       .mockRejectedValue(new DOMException("timeout", "TimeoutError"));
     const provider = new KimiTextProvider(config, fetcher);
     await expect(provider.generateText(generationRequest)).rejects.toEqual(
-      expect.objectContaining({ code: "timeout" }),
+      expect.objectContaining({ code: "timeout", upstreamStatus: undefined }),
     );
     expect(fetcher).toHaveBeenCalledOnce();
   });

@@ -73,6 +73,7 @@ export class KimiTextProvider implements TextGenerationProvider {
         operation: "text-generation",
         message: "The text provider returned an error.",
         retryable: response.status === 429 || response.status >= 500,
+        upstreamStatus: response.status,
       });
     }
 
@@ -86,10 +87,11 @@ export class KimiTextProvider implements TextGenerationProvider {
         operation: "text-generation",
         message: "The text provider response could not be read.",
         retryable: true,
+        upstreamStatus: response.status,
       });
     }
 
-    return this.parseResponse(responseBody);
+    return this.parseResponse(responseBody, response.status);
   }
 
   private assertConfigured() {
@@ -126,33 +128,37 @@ export class KimiTextProvider implements TextGenerationProvider {
     return `${this.config.baseUrl.replace(/\/+$/, "")}/chat/completions`;
   }
 
-  private parseResponse(responseBody: string): TextGenerationResult {
+  private parseResponse(
+    responseBody: string,
+    upstreamStatus: number,
+  ): TextGenerationResult {
     let payload: unknown;
 
     try {
       payload = JSON.parse(responseBody);
     } catch {
-      throw this.invalidResponseError();
+      throw this.invalidResponseError(upstreamStatus);
     }
 
     if (!isKimiChatCompletion(payload)) {
-      throw this.invalidResponseError();
+      throw this.invalidResponseError(upstreamStatus);
     }
 
     const choice = payload.choices[0];
 
     if (choice.finish_reason !== "stop" || !choice.message.content.trim()) {
-      throw this.invalidResponseError();
+      throw this.invalidResponseError(upstreamStatus);
     }
 
     return { text: choice.message.content };
   }
 
-  private invalidResponseError() {
+  private invalidResponseError(upstreamStatus: number) {
     return new ProviderError({
       code: "invalid-response",
       operation: "text-generation",
       message: "The text provider returned an invalid response.",
+      upstreamStatus,
     });
   }
 }

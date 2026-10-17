@@ -1,4 +1,5 @@
 import type { ChineseIdeaStructurer } from "../services/chinese-idea-structuring";
+import { ChineseIdeaStructuringError } from "../services/chinese-idea-structuring";
 import { ProviderError } from "../providers/provider-error";
 import {
   parsePolishRequest,
@@ -30,6 +31,7 @@ export async function handlePolishRequest(
       error instanceof ProviderError &&
       error.code === "upstream-rate-limited"
     ) {
+      logPolishFailure(error, 503);
       return Response.json(
         {
           message:
@@ -39,6 +41,7 @@ export async function handlePolishRequest(
       );
     }
 
+    logPolishFailure(error, 502);
     return Response.json(
       {
         message:
@@ -47,4 +50,46 @@ export async function handlePolishRequest(
       { status: 502, headers: jsonHeaders },
     );
   }
+}
+
+// Never serialize the error, request or upstream response. Only fixed categories
+// and numeric HTTP statuses belong in operational logs, not in browser errors.
+function logPolishFailure(error: unknown, responseStatus: number) {
+  let category = "unexpected-error";
+  let upstreamStatus: number | null = null;
+  if (error instanceof ChineseIdeaStructuringError) {
+    category = "invalid-structured-output";
+  } else if (error instanceof ProviderError) {
+    switch (error.code) {
+      case "not-configured":
+      case "not-implemented":
+      case "upstream-failure":
+      case "upstream-rate-limited":
+      case "timeout":
+      case "invalid-response":
+        category = error.code;
+    }
+    const status = error.upstreamStatus;
+    if (
+      typeof status === "number" &&
+      Number.isInteger(status) &&
+      status >= 100 &&
+      status <= 599
+    ) {
+      upstreamStatus = status;
+    }
+    if (error.code === "upstream-failure") {
+      category =
+        upstreamStatus === null
+          ? "upstream-transport-failure"
+          : upstreamStatus >= 200 && upstreamStatus < 300
+            ? "upstream-response-read-failure"
+            : "upstream-http-failure";
+    }
+  }
+  console.warn("accentforge.polish_failure", {
+    category,
+    upstreamStatus,
+    responseStatus,
+  });
 }
