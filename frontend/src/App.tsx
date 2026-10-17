@@ -11,7 +11,6 @@ import {
 import {
   DAILY_LIMIT_MESSAGE,
   RATE_LIMIT_MESSAGE,
-  SECURITY_MESSAGE,
   UNAVAILABLE_MESSAGE,
 } from "./services/apiError";
 import {
@@ -25,7 +24,6 @@ import {
   UNSUPPORTED_VOICE_MESSAGE,
 } from "./services/synthesizeSpeech";
 import type { Accent, SpeakingPart, TargetBand, Voice } from "./types";
-import { useTurnstileAction } from "./security/useTurnstileAction";
 
 const partOptions: readonly SpeakingPart[] = ["Part 1", "Part 2", "Part 3"];
 const bandOptions: readonly TargetBand[] = ["5", "6", "7", "8", "9"];
@@ -69,7 +67,6 @@ function displayError(error: unknown, fallback: string) {
   return [
     RATE_LIMIT_MESSAGE,
     DAILY_LIMIT_MESSAGE,
-    SECURITY_MESSAGE,
     UNAVAILABLE_MESSAGE,
   ].includes(message)
     ? message
@@ -77,9 +74,6 @@ function displayError(error: unknown, fallback: string) {
 }
 
 function App() {
-  const polishSecurity = useTurnstileAction("polish");
-  const generateSecurity = useTurnstileAction("generate");
-  const speechSecurity = useTurnstileAction("speech");
   const [part, setPart] = useState<SpeakingPart | null>(null);
   const [band, setBand] = useState<TargetBand | null>(null);
   const [accent, setAccent] = useState<Accent | null>(null);
@@ -192,12 +186,10 @@ function App() {
     invalidateAudio();
 
     try {
-      const turnstileToken = await polishSecurity.getToken();
       const structuredChinese = await polishIdea({
         rawChinese: chinese,
         part,
         targetBand: band,
-        turnstileToken,
       });
 
       setChinese(structuredChinese);
@@ -224,12 +216,10 @@ function App() {
     invalidateAudio();
 
     try {
-      const turnstileToken = await generateSecurity.getToken();
       const spokenEnglish = await generateEnglish({
         structuredChinese: chinese,
         part,
         targetBand: band,
-        turnstileToken,
       });
 
       setEnglish(spokenEnglish);
@@ -271,12 +261,10 @@ function App() {
     setAudioError(null);
 
     try {
-      const turnstileToken = await speechSecurity.getToken();
       const result = await synthesizeSpeech({
         text: english,
         accent,
         voice,
-        turnstileToken,
       });
       setAudioUrl(result.audioUrl);
     } catch (error) {
@@ -321,7 +309,6 @@ function App() {
 
         <section className="workspace" aria-label="Speaking answer workspace">
           <EditorCard
-            actionSecurity={polishSecurity.element}
             actionDisabled={!canPolish}
             actionLabel={
               isPolishing ? "Polishing your idea…" : "Polish My Idea"
@@ -340,7 +327,6 @@ function App() {
           />
 
           <EditorCard
-            actionSecurity={generateSecurity.element}
             actionDisabled={!canGenerateEnglish}
             actionLabel={
               isGeneratingEnglish
@@ -394,7 +380,6 @@ function App() {
               {isSynthesizing ? "Generating audio…" : "Read Aloud"}
             </button>
           </div>
-          {speechSecurity.element}
 
           {audioError ? (
             <p className="voice-feedback" role="alert">

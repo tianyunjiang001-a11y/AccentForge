@@ -6,7 +6,6 @@ import { handleGenerateRequest } from "./routes/generate";
 import { handlePolishRequest } from "./routes/polish";
 import { handleSpeechRequest } from "./routes/speech";
 import { protectPaidRoute } from "./security/protect";
-import { handleTurnstileDiagnostic } from "./security/turnstile-diagnostic";
 import type { SecurityEnvironment } from "./security/types";
 import { ChineseIdeaStructuringService } from "./services/chinese-idea-structuring";
 import { EnglishGenerationService } from "./services/english-generation";
@@ -29,10 +28,6 @@ export const app = {
           },
         },
       );
-    }
-
-    if (url.pathname === "/api/turnstile-diagnostic") {
-      return handleTurnstileDiagnostic(request, environment);
     }
 
     if (url.pathname === "/api/polish") {

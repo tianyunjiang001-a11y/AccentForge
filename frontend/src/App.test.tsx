@@ -4,19 +4,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import App from "./App";
 
-const challengeState = vi.hoisted(() => ({ fail: false }));
-vi.mock("./security/useTurnstileAction", () => ({
-  useTurnstileAction: (action: string) => ({
-    getToken: async () => {
-      if (challengeState.fail) {
-        throw new Error("Please complete the security check and try again.");
-      }
-      return `test-token-${action}`;
-    },
-    element: null,
-  }),
-}));
-
 const KIMI_STRUCTURED_CHINESE =
   "我比较喜欢住在大城市，主要是因为工作机会更多，而且生活通常也更方便。不过，大城市的生活节奏比较快，压力也会更明显，所以我觉得是否适合长期生活还是要看个人选择。";
 const KIMI_SPOKEN_ENGLISH =
@@ -25,7 +12,6 @@ const KIMI_SPOKEN_ENGLISH =
 const apiFetch = vi.fn();
 
 beforeEach(() => {
-  challengeState.fail = false;
   apiFetch.mockImplementation(async (input: RequestInfo | URL) => {
     if (String(input) === "/api/polish") {
       return {
@@ -93,7 +79,6 @@ describe("AccentForge four-profile V1 workflow", () => {
           rawChinese: "我喜欢大城市，工作机会多，但是压力也很大。",
           part: 3,
           targetBand: 7,
-          turnstileToken: "test-token-polish",
         }),
       }),
     );
@@ -105,7 +90,6 @@ describe("AccentForge four-profile V1 workflow", () => {
           structuredChinese: KIMI_STRUCTURED_CHINESE,
           part: 3,
           targetBand: 7,
-          turnstileToken: "test-token-generate",
         }),
       }),
     );
@@ -128,12 +112,96 @@ describe("AccentForge four-profile V1 workflow", () => {
           text: KIMI_SPOKEN_ENGLISH,
           accent: "british",
           voice: "female",
-          turnstileToken: "test-token-speech",
         }),
       }),
     );
     expect(URL.createObjectURL).toHaveBeenCalledTimes(1);
   });
+
+  it("prevents duplicate Polish submissions without a challenge or second click", async () => {
+    let resolvePolish: ((response: Response) => void) | undefined;
+    apiFetch.mockReturnValueOnce(
+      new Promise<Response>((resolve) => {
+        resolvePolish = resolve;
+      }),
+    );
+    const user = userEvent.setup();
+    render(<App />);
+    await user.click(screen.getByRole("button", { name: "Part 1" }));
+    await user.click(screen.getByRole("button", { name: "6" }));
+    await user.type(screen.getByLabelText("What I Want to Say"), "喜欢咖啡");
+    const button = screen.getByRole("button", { name: "Polish My Idea" });
+    fireEvent.click(button);
+    fireEvent.click(button);
+    expect(apiFetch).toHaveBeenCalledOnce();
+    expect(
+      document.querySelector('script[src*="challenges.cloudflare.com"]'),
+    ).toBeNull();
+    expect(JSON.parse(apiFetch.mock.calls[0][1].body)).not.toHaveProperty(
+      "turnstileToken",
+    );
+    resolvePolish?.(
+      Response.json({ structuredChinese: KIMI_STRUCTURED_CHINESE }),
+    );
+    await screen.findByDisplayValue(KIMI_STRUCTURED_CHINESE);
+    expect(apiFetch).toHaveBeenCalledOnce();
+  });
+
+  it("prevents duplicate English submissions", async () => {
+    const user = await buildEnglishAnswer();
+    let resolveEnglish: ((response: Response) => void) | undefined;
+    apiFetch.mockReturnValueOnce(
+      new Promise<Response>((resolve) => {
+        resolveEnglish = resolve;
+      }),
+    );
+    const button = screen.getByRole("button", { name: "Generate English" });
+    fireEvent.click(button);
+    fireEvent.click(button);
+    expect(apiFetch).toHaveBeenCalledTimes(3);
+    resolveEnglish?.(Response.json({ spokenEnglish: KIMI_SPOKEN_ENGLISH }));
+    await waitFor(() => expect(button).toBeEnabled());
+    expect(apiFetch).toHaveBeenCalledTimes(3);
+    await user.click(screen.getByRole("button", { name: "American" }));
+    expect(apiFetch).toHaveBeenCalledTimes(3);
+  });
+
+  it.each(["polish", "generate", "speech"])(
+    "shows daily quota exhaustion on %s without retrying or generating audio",
+    async (route) => {
+      const user =
+        route === "polish" ? userEvent.setup() : await buildEnglishAnswer();
+      if (route === "polish") {
+        render(<App />);
+        await user.click(screen.getByRole("button", { name: "Part 1" }));
+        await user.click(screen.getByRole("button", { name: "6" }));
+        await user.type(
+          screen.getByLabelText("What I Want to Say"),
+          "喜欢咖啡",
+        );
+      }
+      if (route === "speech") {
+        await user.click(screen.getByRole("button", { name: "American" }));
+        await user.click(screen.getByRole("button", { name: "Female" }));
+      }
+      const before = apiFetch.mock.calls.length;
+      const message =
+        "Today's availability has been reached. Please try again tomorrow.";
+      apiFetch.mockResolvedValueOnce(
+        Response.json({ message }, { status: 429 }),
+      );
+      const action =
+        route === "polish"
+          ? "Polish My Idea"
+          : route === "generate"
+            ? "Generate English"
+            : "Read Aloud";
+      await user.click(screen.getByRole("button", { name: action }));
+      expect(await screen.findByText(message)).toBeInTheDocument();
+      expect(apiFetch).toHaveBeenCalledTimes(before + 1);
+      expect(document.querySelector("audio")).not.toBeInTheDocument();
+    },
+  );
 
   it("shows only the four approved V1 voice profiles", async () => {
     const user = await buildEnglishAnswer();
@@ -313,8 +381,8 @@ describe("AccentForge four-profile V1 workflow", () => {
     expect(screen.getByLabelText("What I Want to Say")).toHaveValue("喜欢咖啡");
   });
 
-  it("does not call a paid endpoint after a challenge failure", async () => {
-    challengeState.fail = true;
+  it("reports a network failure without automatically retrying Polish", async () => {
+    apiFetch.mockRejectedValueOnce(new Error("network failure"));
     const user = userEvent.setup();
     render(<App />);
     await user.click(screen.getByRole("button", { name: "Part 1" }));
@@ -323,10 +391,13 @@ describe("AccentForge four-profile V1 workflow", () => {
     await user.click(screen.getByRole("button", { name: "Polish My Idea" }));
     expect(
       await screen.findByText(
-        "Please complete the security check and try again.",
+        "Something went wrong while polishing your idea. Please try again.",
       ),
     ).toBeInTheDocument();
-    expect(apiFetch).not.toHaveBeenCalled();
+    expect(apiFetch).toHaveBeenCalledOnce();
+    expect(
+      screen.getByRole("button", { name: "Polish My Idea" }),
+    ).toBeEnabled();
   });
 
   it("generates from the latest learner-edited Structured Chinese", async () => {
@@ -352,7 +423,6 @@ describe("AccentForge four-profile V1 workflow", () => {
           structuredChinese: latestChinese,
           part: 2,
           targetBand: 8,
-          turnstileToken: "test-token-generate",
         }),
       }),
     );

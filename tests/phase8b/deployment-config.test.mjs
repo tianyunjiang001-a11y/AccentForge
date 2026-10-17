@@ -29,25 +29,23 @@ test("Worker first-deployment switches and production origin fail closed", () =>
     API_ENABLED: '"false"',
     KIMI_ENABLED: '"false"',
     MINIMAX_ENABLED: '"false"',
-    TURNSTILE_DIAGNOSTIC_ENABLED: '"false"',
     ALLOWED_ORIGINS: '"https://accentforge.pages.dev"',
-    TURNSTILE_ALLOWED_HOSTNAMES: '"accentforge.pages.dev"',
     KIMI_DAILY_REQUEST_LIMIT: '"4"',
     MINIMAX_DAILY_REQUEST_LIMIT: '"2"',
   })) {
     assert.ok(lines.includes(`${key} = ${value}`), `${key} must be ${value}`);
   }
-  assert.equal((config.match(/^\[\[ratelimits\]\]$/gm) ?? []).length, 5);
+  assert.equal((config.match(/^\[\[ratelimits\]\]$/gm) ?? []).length, 4);
   for (const name of [
     "POLISH_RATE_LIMIT",
     "GENERATE_RATE_LIMIT",
     "SPEECH_RATE_LIMIT",
     "COMBINED_RATE_LIMIT",
-    "TURNSTILE_DIAGNOSTIC_RATE_LIMIT",
   ]) {
     assert.ok(lines.includes(`name = "${name}"`), `${name} must remain bound`);
   }
   assert.match(config, /^new_sqlite_classes = \["GlobalUsage"\]$/m);
+  assert.doesNotMatch(config, /TURNSTILE_DIAGNOSTIC_/);
 });
 
 test("Pages package manager and build path match the workspace", () => {

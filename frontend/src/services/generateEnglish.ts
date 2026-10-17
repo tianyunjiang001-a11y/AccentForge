@@ -8,7 +8,6 @@ interface GenerateEnglishRequest {
   part: SpeakingPart;
   structuredChinese: string;
   targetBand: TargetBand;
-  turnstileToken: string;
 }
 
 interface GenerateEnglishResponse {
@@ -30,7 +29,6 @@ export async function generateEnglish(
         structuredChinese: request.structuredChinese,
         part: Number(request.part.replace("Part ", "")),
         targetBand: Number(request.targetBand),
-        turnstileToken: request.turnstileToken,
       }),
     });
   } catch {

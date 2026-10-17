@@ -13,8 +13,7 @@ const MAX_BODY_BYTES: Record<PaidRoute, number> = {
   speech: 24_000,
 };
 
-export type RequestCheck =
-  { token: string; error?: never } | { error: Response; token?: never };
+export type RequestCheck = { error?: Response };
 
 export async function checkPaidRequest(
   request: Request,
@@ -78,17 +77,7 @@ export async function checkPaidRequest(
     };
   }
 
-  if (
-    typeof body.turnstileToken !== "string" ||
-    !body.turnstileToken.trim() ||
-    body.turnstileToken.length > 2048
-  ) {
-    return {
-      error: safeJson("Please complete the security check and try again.", 403),
-    };
-  }
-
-  return { token: body.turnstileToken };
+  return {};
 }
 
 async function readLimitedBody(request: Request, limit: number) {

@@ -8,7 +8,6 @@ interface PolishIdeaRequest {
   part: SpeakingPart;
   rawChinese: string;
   targetBand: TargetBand;
-  turnstileToken: string;
 }
 
 interface PolishIdeaResponse {
@@ -28,7 +27,6 @@ export async function polishIdea(request: PolishIdeaRequest): Promise<string> {
         rawChinese: request.rawChinese,
         part: Number(request.part.replace("Part ", "")),
         targetBand: Number(request.targetBand),
-        turnstileToken: request.turnstileToken,
       }),
     });
   } catch {

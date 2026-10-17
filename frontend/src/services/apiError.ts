@@ -3,8 +3,6 @@ export const DAILY_LIMIT_MESSAGE =
   "Today's availability has been reached. Please try again tomorrow.";
 export const UNAVAILABLE_MESSAGE =
   "This feature is temporarily unavailable. Please try again later.";
-export const SECURITY_MESSAGE =
-  "Please complete the security check and try again.";
 
 export async function readSafeApiError(response: Response, fallback: string) {
   if (![403, 429, 503].includes(response.status)) return fallback;
@@ -14,12 +12,9 @@ export async function readSafeApiError(response: Response, fallback: string) {
       return fallback;
     const message = (body as Record<string, unknown>).message;
     return typeof message === "string" &&
-      [
-        RATE_LIMIT_MESSAGE,
-        DAILY_LIMIT_MESSAGE,
-        UNAVAILABLE_MESSAGE,
-        SECURITY_MESSAGE,
-      ].includes(message)
+      [RATE_LIMIT_MESSAGE, DAILY_LIMIT_MESSAGE, UNAVAILABLE_MESSAGE].includes(
+        message,
+      )
       ? message
       : fallback;
   } catch {

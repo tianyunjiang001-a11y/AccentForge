@@ -1,6 +1,6 @@
 # AccentForge — Codex Build Brief
 
-**Version:** 1.4
+**Version:** 1.5
 **Status:** Frozen Build Specification  
 **Project:** AccentForge  
 **Implementation Mode:** Sequential, test-first, mock-first  
@@ -1360,13 +1360,18 @@ Buttons should enter appropriate disabled/loading states during active requests.
 
 # 32. Bot Protection
 
-Use:
+Owner-approved temporary policy: remove Turnstile from the required frontend
+and Worker request path. Do not introduce another challenge or diagnostic tool.
+Retain exact server-side Origin checks, bounded request bodies, four business
+rate limits, atomic SQLite Durable Object quotas and all three fail-closed API
+switches. Initial UTC-day caps are 4 Kimi requests shared by Polish and Generate,
+and 2 MiniMax requests. A rejected quota reservation must never reach a provider.
 
-**Cloudflare Turnstile**
-
-or equivalent Cloudflare-native protection.
-
-Normal users should experience minimal friction.
+This policy bounds provider request counts but cannot prevent anonymous clients
+from consuming the day's availability. Origin is not authentication. No public
+Worker route may be exposed. Keep owner-only Cloudflare Access until one real
+Polish → Generate → Audio website workflow succeeds without retries. Deployment,
+paid activation and removal of Access each require separate owner approval.
 
 Do not require account creation solely for abuse protection.
 
@@ -1403,7 +1408,7 @@ Preserve these request-level controls:
 - explicit Read Aloud action;
 - exactly one selected voice generated per TTS request;
 - server-side credentials;
-- rate limiting and bot protection before public launch.
+- rate limiting and atomic global daily request quotas before public launch.
 
 The software must fail gracefully if the provider limit is reached.
 
@@ -2092,7 +2097,7 @@ AccentForge V1.0.0 may be released only when all of the following are true.
 - Worker is deployed;
 - Kimi and MiniMax API secrets are protected;
 - rate limiting exists;
-- bot protection exists;
+- the approved rate limits, atomic daily quotas and emergency switches exist;
 - provider usage and budget monitoring exists;
 - errors are handled.
 

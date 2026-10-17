@@ -10,7 +10,6 @@ interface SynthesizeSpeechInput {
   text: string;
   accent: Accent;
   voice: Voice;
-  turnstileToken: string;
 }
 
 export interface SynthesizedAudio {
@@ -32,7 +31,6 @@ export async function synthesizeSpeech(
         text: input.text,
         accent: input.accent.toLowerCase(),
         voice: input.voice.toLowerCase(),
-        turnstileToken: input.turnstileToken,
       }),
     });
   } catch {

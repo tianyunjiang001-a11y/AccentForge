@@ -13,9 +13,6 @@ function environment(
     API_ENABLED: "true",
     KIMI_ENABLED: "true",
     MINIMAX_ENABLED: "true",
-    TURNSTILE_SITE_KEY: "real-sitekey-placeholder",
-    TURNSTILE_SECRET_KEY: "real-secret-placeholder",
-    TURNSTILE_ALLOWED_HOSTNAMES: "app.example",
     ALLOWED_ORIGINS: "https://app.example",
     POLISH_RATE_LIMIT: accepted,
     GENERATE_RATE_LIMIT: accepted,
@@ -27,18 +24,15 @@ function environment(
 }
 
 function validBody(route: PaidRoute) {
-  const common = { turnstileToken: "valid-token" };
   if (route === "polish")
-    return { ...common, rawChinese: "我喜欢咖啡", part: 1, targetBand: 6 };
+    return { rawChinese: "我喜欢咖啡", part: 1, targetBand: 6 };
   if (route === "generate")
     return {
-      ...common,
       structuredChinese: "我喜欢咖啡",
       part: 1,
       targetBand: 6,
     };
   return {
-    ...common,
     text: "I quite like coffee.",
     accent: "australian",
     voice: "male",
@@ -67,7 +61,6 @@ function request(
 
 function dependencies() {
   return {
-    verify: vi.fn().mockResolvedValue(true),
     rate: vi.fn().mockResolvedValue(true),
     quota: vi.fn().mockResolvedValue("allowed"),
   };
@@ -88,12 +81,6 @@ describe("paid route security chain", () => {
       );
       expect(response.status).toBe(200);
       expect(deps.rate).toHaveBeenCalledOnce();
-      expect(deps.verify).toHaveBeenCalledWith(
-        "valid-token",
-        route,
-        expect.any(URL),
-        expect.any(Object),
-      );
       expect(deps.quota).toHaveBeenCalledWith(
         route === "speech" ? "minimax" : "kimi",
         expect.any(Object),
@@ -107,12 +94,13 @@ describe("paid route security chain", () => {
     },
   );
 
-  it("rejects missing token before siteverify, quota or a paid provider", async () => {
-    const diagnostic = vi.spyOn(console, "info").mockImplementation(() => {});
+  it("rejects a missing Origin before rate limits, quota or a paid provider", async () => {
     const execute = vi.fn();
     const deps = dependencies();
+    const missingOrigin = request("polish");
+    missingOrigin.headers.delete("origin");
     const response = await protectPaidRoute(
-      request("polish", { rawChinese: "咖啡", part: 1, targetBand: 5 }),
+      missingOrigin,
       "polish",
       environment(),
       execute,
@@ -120,42 +108,31 @@ describe("paid route security chain", () => {
     );
     expect(response.status).toBe(403);
     expect(deps.rate).not.toHaveBeenCalled();
-    expect(deps.verify).not.toHaveBeenCalled();
     expect(deps.quota).not.toHaveBeenCalled();
     expect(execute).not.toHaveBeenCalled();
-    expect(diagnostic).toHaveBeenCalledWith("accentforge.turnstile", {
-      route: "polish",
-      category: "before_siteverify",
-      workerStatus: 403,
-      reason: "missing_token",
-    });
-    const logged = JSON.stringify(diagnostic.mock.calls);
-    expect(logged).not.toContain("咖啡");
-    expect(logged).not.toContain("192.0.2.1");
-    diagnostic.mockRestore();
   });
 
-  it.each(["invalid", "expired-or-replayed"])(
-    "rejects %s Turnstile verification without a provider call",
-    async () => {
+  it.each(["null", "https://evil.example", "https://app.example.evil.test"])(
+    "rejects untrusted Origin %s without reserving quota or calling a provider",
+    async (origin) => {
       const execute = vi.fn();
       const deps = dependencies();
-      deps.verify.mockResolvedValue(false);
       const response = await protectPaidRoute(
-        request("generate"),
+        request("generate", validBody("generate"), { origin }),
         "generate",
         environment(),
         execute,
         deps,
       );
       expect(response.status).toBe(403);
+      expect(deps.rate).not.toHaveBeenCalled();
       expect(deps.quota).not.toHaveBeenCalled();
       expect(execute).not.toHaveBeenCalled();
     },
   );
 
   it.each(["polish", "generate", "speech"] as const)(
-    "rejects per-route rate limit on %s before verification/provider",
+    "rejects per-route rate limit on %s before quota/provider",
     async (route) => {
       const execute = vi.fn();
       const deps = dependencies();
@@ -168,25 +145,35 @@ describe("paid route security chain", () => {
         deps,
       );
       expect(response.status).toBe(429);
-      expect(deps.verify).not.toHaveBeenCalled();
+      expect(deps.quota).not.toHaveBeenCalled();
       expect(execute).not.toHaveBeenCalled();
     },
   );
 
-  it("rejects exhausted shared quota before provider execution", async () => {
-    const execute = vi.fn();
-    const deps = dependencies();
-    deps.quota.mockResolvedValue("exhausted");
-    const response = await protectPaidRoute(
-      request("speech"),
-      "speech",
-      environment(),
-      execute,
-      deps,
-    );
-    expect(response.status).toBe(429);
-    expect(execute).not.toHaveBeenCalled();
-  });
+  it.each([
+    ["polish", "exhausted", 429],
+    ["generate", "exhausted", 429],
+    ["speech", "exhausted", 429],
+    ["polish", "unavailable", 503],
+    ["generate", "unavailable", 503],
+    ["speech", "unavailable", 503],
+  ] as const)(
+    "rejects %s when shared quota is %s before provider execution",
+    async (route, result, status) => {
+      const execute = vi.fn();
+      const deps = dependencies();
+      deps.quota.mockResolvedValue(result);
+      const response = await protectPaidRoute(
+        request(route),
+        route,
+        environment(),
+        execute,
+        deps,
+      );
+      expect(response.status).toBe(status);
+      expect(execute).not.toHaveBeenCalled();
+    },
+  );
 
   it.each([
     [
@@ -235,7 +222,6 @@ describe("paid route security chain", () => {
       );
       expect(response.status).toBe(503);
       expect(deps.rate).not.toHaveBeenCalled();
-      expect(deps.verify).not.toHaveBeenCalled();
       expect(deps.quota).not.toHaveBeenCalled();
       expect(execute).not.toHaveBeenCalled();
     },
@@ -260,7 +246,6 @@ describe("paid route security chain", () => {
         environment({
           SECURITY_ENV: "development",
           ALLOWED_ORIGINS: "http://127.0.0.1:5173",
-          TURNSTILE_ALLOWED_HOSTNAMES: hostname,
         }),
         execute,
         deps,
@@ -290,16 +275,10 @@ describe("paid route security chain", () => {
   );
 
   it.each([
-    ["missing secret", { TURNSTILE_SECRET_KEY: "" }],
-    ["missing hostname", { TURNSTILE_ALLOWED_HOSTNAMES: "" }],
-    [
-      "test secret in production",
-      { TURNSTILE_SECRET_KEY: "1x0000000000000000000000000000000AA" },
-    ],
-    [
-      "test sitekey in production",
-      { TURNSTILE_SITE_KEY: "1x00000000000000000000AA" },
-    ],
+    ["missing allowed origins", { ALLOWED_ORIGINS: "" }],
+    ["wildcard origin", { ALLOWED_ORIGINS: "*" }],
+    ["HTTP production origin", { ALLOWED_ORIGINS: "http://app.example" }],
+    ["origin with path", { ALLOWED_ORIGINS: "https://app.example/path" }],
     ["missing quota", { GLOBAL_USAGE: undefined }],
     ["missing rate binding", { SPEECH_RATE_LIMIT: undefined }],
   ] as const)("fails closed for %s", async (_name, overrides) => {
@@ -333,7 +312,7 @@ describe("paid route security chain", () => {
       deps,
     );
     expect(response.status).toBe(400);
-    expect(deps.verify).not.toHaveBeenCalled();
+    expect(deps.quota).not.toHaveBeenCalled();
     expect(execute).not.toHaveBeenCalled();
   });
 
@@ -352,7 +331,7 @@ describe("paid route security chain", () => {
       deps,
     );
     expect(response.status).toBe(400);
-    expect(deps.verify).not.toHaveBeenCalled();
+    expect(deps.quota).not.toHaveBeenCalled();
     expect(execute).not.toHaveBeenCalled();
   });
 
@@ -386,7 +365,7 @@ describe("paid route security chain", () => {
     );
     expect(badJson.status).toBe(400);
     expect(oversized.status).toBe(413);
-    expect(deps.verify).not.toHaveBeenCalled();
+    expect(deps.quota).not.toHaveBeenCalled();
     expect(execute).not.toHaveBeenCalled();
   });
 
@@ -411,6 +390,7 @@ describe("paid route security chain", () => {
     );
     const wrongMethod = new Request("https://worker.example/api/polish", {
       method: "GET",
+      headers: { origin: "https://app.example" },
     });
     const methodResponse = await protectPaidRoute(
       wrongMethod,
@@ -426,7 +406,7 @@ describe("paid route security chain", () => {
     expect(execute).not.toHaveBeenCalled();
   });
 
-  it("answers only trusted CORS preflight without Siteverify or provider work", async () => {
+  it("answers only trusted CORS preflight without quota or provider work", async () => {
     const execute = vi.fn();
     const deps = dependencies();
     const trusted = new Request("https://worker.example/api/speech", {
@@ -457,7 +437,7 @@ describe("paid route security chain", () => {
     );
     expect(rejected.status).toBe(403);
     expect(rejected.headers.get("access-control-allow-origin")).toBeNull();
-    expect(deps.verify).not.toHaveBeenCalled();
+    expect(deps.quota).not.toHaveBeenCalled();
     expect(execute).not.toHaveBeenCalled();
   });
 });

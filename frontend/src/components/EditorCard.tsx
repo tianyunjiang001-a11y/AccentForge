@@ -1,5 +1,4 @@
 interface EditorCardProps {
-  actionSecurity?: React.ReactNode;
   actionDisabled?: boolean;
   actionLabel: string;
   actionLoading?: boolean;
@@ -17,7 +16,6 @@ interface EditorCardProps {
 }
 
 export function EditorCard({
-  actionSecurity,
   actionDisabled = false,
   actionLabel,
   actionLoading = false,
@@ -63,7 +61,6 @@ export function EditorCard({
         {actionLoading ? <span aria-hidden="true" className="spinner" /> : null}
         {actionLabel}
       </button>
-      {actionSecurity}
     </article>
   );
 }

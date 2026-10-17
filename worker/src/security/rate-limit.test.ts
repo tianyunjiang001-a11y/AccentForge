@@ -36,4 +36,31 @@ describe("rate-limit bindings", () => {
       passesRateLimits(new Request("https://worker.example"), "speech", env),
     ).resolves.toBe(false);
   });
+
+  it.each(["polish", "generate", "speech"] as const)(
+    "uses the %s limiter and rejects the combined limiter before paid work",
+    async (routeName) => {
+      const polish = { limit: vi.fn().mockResolvedValue({ success: true }) };
+      const generate = { limit: vi.fn().mockResolvedValue({ success: true }) };
+      const speech = { limit: vi.fn().mockResolvedValue({ success: true }) };
+      const combined = { limit: vi.fn().mockResolvedValue({ success: false }) };
+      const env: SecurityEnvironment = {
+        POLISH_RATE_LIMIT: polish,
+        GENERATE_RATE_LIMIT: generate,
+        SPEECH_RATE_LIMIT: speech,
+        COMBINED_RATE_LIMIT: combined,
+      };
+      await expect(
+        passesRateLimits(new Request("https://worker.example"), routeName, env),
+      ).resolves.toBe(false);
+      for (const [name, limiter] of Object.entries({
+        polish,
+        generate,
+        speech,
+      })) {
+        expect(limiter.limit).toHaveBeenCalledTimes(name === routeName ? 1 : 0);
+      }
+      expect(combined.limit).toHaveBeenCalledOnce();
+    },
+  );
 });

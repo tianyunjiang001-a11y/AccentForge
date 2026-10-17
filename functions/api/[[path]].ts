@@ -1,11 +1,6 @@
 // Pages project root is the repository root; only /api/* invokes this Function.
 const PRODUCTION_ORIGIN = "https://accentforge.pages.dev";
-const APPROVED_PATHS = new Set([
-  "/api/polish",
-  "/api/generate",
-  "/api/speech",
-  "/api/turnstile-diagnostic",
-]);
+const APPROVED_PATHS = new Set(["/api/polish", "/api/generate", "/api/speech"]);
 
 interface ApiServiceBinding {
   fetch(request: Request): Promise<Response>;
@@ -40,12 +35,6 @@ export async function onRequest({ request, env }: Context): Promise<Response> {
     return reject("This request is not supported.", 403);
   }
   if (!APPROVED_PATHS.has(url.pathname)) {
-    return reject("Not found.", 404);
-  }
-  if (
-    url.pathname === "/api/turnstile-diagnostic" &&
-    request.method !== "POST"
-  ) {
     return reject("Not found.", 404);
   }
   if (request.method !== "POST" && request.method !== "OPTIONS") {

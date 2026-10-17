@@ -1,6 +1,46 @@
 # Phase 8G-D4A — Temporary Turnstile diagnostic (local preparation)
 
-Status: implemented and tested locally; **not deployed or enabled**.
+Status: historical implementation record. The temporary tool has been removed
+from the current local source. This cleanup has **not** been pushed or deployed;
+no production configuration or Secret has been removed. The implementation and
+activation instructions below describe the retired tool, not a deployment plan.
+
+## Local removal and smallest release plan
+
+Removed the temporary frontend view, Worker endpoint, Pages allowlist entry,
+Access JWT verifier and its `jose` dependency, dedicated tests, environment types,
+ordinary diagnostic variables and fifth rate-limit binding. Under the owner's
+subsequent usable-website decision, Turnstile is also temporarily removed from
+the normal request path. Four business rate limits, bounded requests, exact
+Origins, shared daily quotas and all three emergency switches remain enforced.
+
+After separate approval:
+
+1. Record the current Pages deployment and disabled Worker version as rollback
+   targets. Keep Access in place and all three paid switches `false`.
+2. Deploy the cleaned Worker and Pages Function/frontend using the existing
+   manual deployment workflow. Preserve the three production provider/Turnstile
+   Secrets, `ACCENTFORGE_API`, four normal rate limits and `GLOBAL_USAGE`. Remove
+   only the retired ordinary diagnostic variables/binding. Delete encrypted
+   `TURNSTILE_DIAGNOSTIC_OWNER_EMAIL` only after the deployment is stable and
+   rollback is no longer needed. Do not bypass a strict configuration conflict.
+3. Verify the removed API returns 404, the old view no longer renders a diagnostic
+   interface, and normal paid routes return the Worker's disabled 503. The old
+   view URL can fall back to the ordinary App because Pages serves an SPA.
+4. With separate paid-test approval and Access still owner-only, temporarily
+   enable the required providers and perform exactly one real website
+   Polish → Generate → Audio workflow with no automatic retries. Restore all
+   switches to `false` after the test. Only a successful complete workflow allows
+   requesting approval for public access with paid functionality and the same
+   4/2 quotas. Do not publish a static-only substitute. GitHub Public visibility
+   separately requires a complete historical credential check and owner approval.
+
+If deployment regresses, restore the recorded Pages deployment and disabled
+Worker version, keep paid switches `false`, and retain/reinstate owner-only Access.
+Delay deletion of the diagnostic owner Secret until rollback is no longer needed;
+Worker version rollback does not restore a deleted Secret.
+
+## Historical implementation
 
 This tool isolates the production Turnstile check from Kimi, MiniMax and the
 `GlobalUsage` paid-request quota. It is not a new learner feature. The normal

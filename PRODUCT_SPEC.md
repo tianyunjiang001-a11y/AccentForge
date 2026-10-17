@@ -1,6 +1,6 @@
 # AccentForge — Product Specification
 
-**Version:** 1.2
+**Version:** 1.3
 **Status:** Frozen Product Specification  
 **Product Type:** Public AI-powered IELTS Speaking learning tool  
 **Core Platforms:** Kimi + MiniMax + Cloudflare
@@ -544,11 +544,18 @@ Required rules:
 - TTS only after Read Aloud;
 - only one approved voice profile generated per request;
 - server-side rate limiting;
-- bot protection;
+- four server-side rate limits, shared daily quotas and emergency switches;
 - provider-level usage and budget monitoring for Kimi and MiniMax;
 - API credentials stored only on the backend.
 
 The public product should remain free to users during its active application-cycle deployment.
+
+Owner-approved temporary launch policy: Turnstile is paused in both the frontend
+and Worker request path. Initial shared UTC-day caps remain 4 Kimi requests
+(Polish and Generate combined) and 2 MiniMax requests. This limits provider calls,
+not monetary spend, and does not prevent bots from exhausting availability.
+Keep owner-only Access until one controlled real website workflow has passed;
+deployment, paid enablement and public access each require separate approval.
 
 ---
 

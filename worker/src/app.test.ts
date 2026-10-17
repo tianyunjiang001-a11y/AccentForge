@@ -18,9 +18,6 @@ function environment(): SecurityEnvironment {
     MINIMAX_BASE_URL: "https://minimax.unit.test",
     MINIMAX_TTS_MODEL: "speech-2.8-turbo",
     MINIMAX_AUSTRALIAN_MALE_VOICE_ID: "English_Aussie_Bloke",
-    TURNSTILE_SITE_KEY: "unit-public-key",
-    TURNSTILE_SECRET_KEY: "unit-server-secret",
-    TURNSTILE_ALLOWED_HOSTNAMES: "app.example",
     ALLOWED_ORIGINS: "https://app.example",
     POLISH_RATE_LIMIT: rate,
     GENERATE_RATE_LIMIT: rate,
@@ -40,31 +37,18 @@ function request(route: string, body: unknown) {
       "content-type": "application/json",
       origin: "https://app.example",
     },
-    body: JSON.stringify({
-      ...(body as object),
-      turnstileToken: `unit-token-${route}`,
-    }),
+    body: JSON.stringify(body),
   });
 }
 
 function fakeProviderFetch(
   options: {
-    siteverify?: boolean;
     kimiStatus?: number;
     miniMaxStatus?: number;
   } = {},
 ) {
   return vi.fn<typeof fetch>().mockImplementation(async (input, init) => {
     const url = String(input);
-    if (url.includes("turnstile/v0/siteverify")) {
-      const token = new URLSearchParams(String(init?.body)).get("response");
-      return Response.json({
-        success:
-          options.siteverify !== false && token?.startsWith("unit-token-"),
-        hostname: "app.example",
-        action: token?.replace("unit-token-", ""),
-      });
-    }
     if (url.includes("kimi.unit.test")) {
       if (options.kimiStatus)
         return new Response("private provider error", {
@@ -140,7 +124,7 @@ describe("secured Worker route integration with mocked providers", () => {
       fetcher.mock.calls.filter(([url]) =>
         String(url).includes("turnstile/v0/siteverify"),
       ),
-    ).toHaveLength(3);
+    ).toHaveLength(0);
     expect(
       fetcher.mock.calls.filter(([url]) =>
         String(url).includes("kimi.unit.test"),
@@ -154,7 +138,7 @@ describe("secured Worker route integration with mocked providers", () => {
   });
 
   it("makes no paid provider request after a failed security check", async () => {
-    const fetcher = fakeProviderFetch({ siteverify: false });
+    const fetcher = fakeProviderFetch();
     vi.stubGlobal("fetch", fetcher);
     const reserve = vi
       .fn()
@@ -164,16 +148,16 @@ describe("secured Worker route integration with mocked providers", () => {
       idFromName: () => "global-id",
       get: () => ({ fetch: reserve }),
     } as unknown as DurableObjectNamespace;
-    const response = await app.fetch(
-      request("polish", { rawChinese: "咖啡", part: 1, targetBand: 6 }),
-      env,
-    );
+    const untrusted = request("polish", {
+      rawChinese: "咖啡",
+      part: 1,
+      targetBand: 6,
+    });
+    untrusted.headers.set("origin", "https://evil.example");
+    const response = await app.fetch(untrusted, env);
     expect(response.status).toBe(403);
-    expect(fetcher).toHaveBeenCalledOnce();
+    expect(fetcher).not.toHaveBeenCalled();
     expect(reserve).not.toHaveBeenCalled();
-    expect(String(fetcher.mock.calls[0][0])).toContain(
-      "turnstile/v0/siteverify",
-    );
   });
 
   it("hides upstream 429 and MiniMax errors from the browser", async () => {
